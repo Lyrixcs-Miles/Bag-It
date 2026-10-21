@@ -367,8 +367,8 @@ export default function App() {
         </nav>
         <div className="product-layout">
           <div className="product-photo">
-            <span className="product-photo-label">ALL DRESSED UP. READY TO GO.</span>
-            <img src={product.src} alt={`${product.name} tumbler with the complete matching accessory set`} />
+            <span className="product-photo-label"><Sparkles size={13} /> ALL DRESSED UP. READY TO GO.</span>
+            <img src={product.src} alt={`${product.name} tumbler with the complete matching accessory set`} /><div className="product-photo-caption"><span>THE SIGNATURE COLLECTION</span><span>0{productIndex + 1} / 04</span></div>
           </div>
           <section className="product-details">
             <p className="product-eyebrow">YOUR DAILY SIP, WITH PERSONALITY</p>
@@ -377,10 +377,10 @@ export default function App() {
             <fieldset className="product-colors">
               <legend>Color <strong>{product.name}</strong></legend>
               <div className="product-swatches">{IMAGES.map((item, index) => (
-                <a key={item.name} href={`#/products/${productSlug(item)}`} aria-label={`View ${item.name} tumbler`} aria-current={index === productIndex ? 'page' : undefined} title={item.name} style={{ backgroundColor: ['#F8B6D0', '#17181B', '#C7B5ED', '#AFE0CD'][index] }} />
+                <a key={item.name} href={`#/products/${productSlug(item)}`} aria-label={`View ${item.name} tumbler`} aria-current={index === productIndex ? 'page' : undefined} title={item.name}><span className="product-swatch-dot" style={{ backgroundColor: ['#F8B6D0', '#17181B', '#C7B5ED', '#AFE0CD'][index] }} /><span>{item.name}</span></a>
               ))}</div>
             </fieldset>
-            <div className="product-purchase"><BuyButton product={product} /></div>
+            <div className="product-purchase"><BuyButton product={product} /><p className="product-purchase-note"><Ribbon size={14} /> Full matching accessory set included</p></div>
             <div className="product-included">
               <h2>The complete look</h2>
               <ul>
