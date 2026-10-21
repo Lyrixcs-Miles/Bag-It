@@ -1,20 +1,34 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
-
 # Blush&Bloom
 
-Accessorized tumblers in four coordinated colors. Run Blush&Bloom locally with the commands below.
+A tumbler storefront with four colorways, coordinated accessories, product detail pages, and a shopping bag saved in the browser.
 
-View your app in AI Studio: https://ai.studio/apps/8f2228c7-f09f-448f-ad9b-b18cbfa50b6a
+Built with React, TypeScript, Vite, and Tailwind CSS.
 
-## Run Locally
+## Development
 
-**Prerequisites:**  Node.js
+Install Node.js 22 or later, then run:
 
+```sh
+npm ci
+npm run dev
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+The development server runs at http://localhost:3000. No API keys or environment variables are required.
+
+## Checks and production build
+
+```sh
+npm run lint
+npm run build
+npm run preview
+```
+
+`lint` runs the TypeScript compiler without emitting files. The production build is written to `dist/`; deploy that directory to a static host.
+
+## Products and checkout
+
+Product images are in `public/images/`. Color definitions and product content are in `src/App.tsx`; styles are in `src/index.css`.
+
+Add the secure checkout URL for each color in `src/checkout.ts` to enable checkout handoff. Checkout is currently unconnected, so the storefront does not take payments. Prices, inventory, quantity, and delivery must be confirmed by the checkout provider.
+
+Shopping bag contents are stored locally in the visitor's browser, with a limit of ten items per color.
