@@ -37,9 +37,9 @@ The current `/images/...` product paths and Vite configuration assume root-domai
 
 Fonts are loaded from Google Fonts. If that service is unavailable, the configured sans-serif fallbacks are used. Images, scripts, and styles are served from the built site.
 
-The root `CNAME` file declares `blush.azhyre.co.za` as the intended custom domain. The file alone does not verify DNS, TLS, or a successful deployment. Vite does not automatically copy a repository-root `CNAME` into `dist/`; if the hosting workflow requires that file in the published artifact, copy it during deployment or configure the domain through the host.
+`public/CNAME` declares `blush.azhyre.co.za` as the custom domain. Vite copies it into `dist/` on every build. The file alone does not verify DNS or TLS.
 
-Pushing to GitHub does not by itself guarantee deployment. Connect the repository to a static hosting service or upload `dist/` through the host's deployment process.
+The site is hosted on GitHub Pages. `.github/workflows/deploy.yml` builds the site and publishes `dist/` on every push to `main`. The repository's Pages source must be set to **GitHub Actions**. If it is set to deploy from a branch, Pages serves the unbuilt source `index.html` and the site shows a blank page.
 
 ## Checkout configuration
 
