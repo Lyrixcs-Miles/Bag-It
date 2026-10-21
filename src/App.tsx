@@ -20,11 +20,8 @@ const productFromHash = () => IMAGES.findIndex(item => window.location.hash === 
 
 type Role = 'center' | 'left' | 'right' | 'back';
 
-// SVG fractalNoise data URI, baseFrequency=0.9, numOctaves=4, opacity 0.08 inside SVG
 const GRAIN_SVG_DATA_URI =
   "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E";
-
-
 
 type Bag = Record<string, number>;
 const BAG_KEY = 'bowcarry-shopping-bag';
@@ -188,7 +185,6 @@ export default function App() {
   const animTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchStartXRef = useRef<number | null>(null);
 
-  // Preload all 4 images on mount
   useEffect(() => {
     IMAGES.forEach((item) => {
       const img = new Image();
@@ -196,7 +192,6 @@ export default function App() {
     });
   }, []);
 
-  // Update isMobile on window resize
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 640);
@@ -205,7 +200,6 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Navigation logic: ignore if animating; lock for 650ms
   const navigate = useCallback(
     (direction: 'next' | 'prev') => {
       if (isAnimating) return;
@@ -228,7 +222,6 @@ export default function App() {
     [isAnimating]
   );
 
-  // Clean up animation timer
   useEffect(() => {
     return () => {
       if (animTimerRef.current) {
@@ -237,7 +230,6 @@ export default function App() {
     };
   }, []);
 
-  // Keyboard navigation support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (productFromHash() >= 0) return;
@@ -251,7 +243,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigate]);
 
-  // Touch swipe support for mobile
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     touchStartXRef.current = e.touches[0].clientX;
   };
@@ -270,7 +261,6 @@ export default function App() {
     touchStartXRef.current = null;
   };
 
-  // Derive role for each item index
   const getRole = (index: number): Role => {
     if (index === activeIndex) return 'center';
     if (index === (activeIndex + 3) % 4) return 'left';
@@ -278,7 +268,6 @@ export default function App() {
     return 'back';
   };
 
-  // Role-based styling configuration
   const getRoleStyle = (role: Role): React.CSSProperties => {
     const transitionCurve = '650ms cubic-bezier(0.4, 0, 0.2, 1)';
     const baseTransition = [
@@ -448,7 +437,7 @@ export default function App() {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 1. Grain overlay */}
+
         <div
           id="grain-overlay"
           className="absolute inset-0 pointer-events-none"
@@ -461,7 +450,6 @@ export default function App() {
           }}
         />
 
-        {/* 2. Giant ghost text "SIP IN STYLE" */}
         <div
           id="giant-ghost-text"
           className="absolute inset-x-0 flex items-center justify-center pointer-events-none select-none uppercase"
@@ -481,7 +469,6 @@ export default function App() {
           SIP IN STYLE
         </div>
 
-        {/* 3. Top-left brand label */}
         <header
           id="brand-header"
           className="absolute top-6 left-4 sm:left-8"
@@ -502,7 +489,7 @@ export default function App() {
         <div id="colors" className="absolute top-6 right-4 sm:right-8 flex items-center gap-3" style={{ zIndex: 60 }} aria-label="Tumbler colors">
 {IMAGES.map((item, index) => <button key={item.name} type="button" aria-label={`Show ${item.name}`} aria-pressed={activeIndex === index} onClick={() => { if (!isAnimating) setActiveIndex(index); }} className="w-6 h-6 rounded-full border-2 border-white cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" style={{ backgroundColor: ['#F8B6D0', '#17181B', '#C7B5ED', '#AFE0CD'][index], outline: activeIndex === index ? '2px solid white' : undefined, outlineOffset: 4 }} />)}
 </div>
-{/* 4. Carousel */}
+
         <div
           id="tumbler-carousel"
           className="absolute inset-0"
@@ -551,7 +538,6 @@ export default function App() {
           })}
         </div>
 
-        {/* 5. Bottom-left text + nav buttons */}
         <div
           id="bottom-left-panel"
           className="absolute bottom-6 left-4 sm:bottom-20 sm:left-24"
@@ -622,7 +608,6 @@ export default function App() {
 
         <div id="hero-buy"><BuyButton product={IMAGES[activeIndex]} compact /></div>
 
-        {/* 6. Bottom-right link "NEXT COLOR" */}
         <a
           id="discover-it-link"
           href={`#/products/${productSlug(IMAGES[activeIndex])}`}
