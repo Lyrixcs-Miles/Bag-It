@@ -17,7 +17,10 @@
 
     const updateVariant = (slide, swatch) => {
       const image = slide.querySelector('[data-bb-product-image]');
-      if (image && swatch.dataset.image) image.src = swatch.dataset.image;
+      if (image && swatch.dataset.image) {
+        image.src = swatch.dataset.image;
+        image.alt = `${slide.dataset.title} in ${swatch.dataset.variantTitle}`;
+      }
       if (swatch.dataset.background) section.style.setProperty('--bb-bg', swatch.dataset.background);
       if (swatch.dataset.panel) section.style.setProperty('--bb-panel', swatch.dataset.panel);
       slide.href = swatch.dataset.url;
@@ -30,6 +33,11 @@
       if (slide.dataset.index === String(activeIndex)) {
         if (selectedColor) selectedColor.textContent = swatch.dataset.variantTitle;
         if (discover) discover.href = swatch.dataset.url;
+        const soldOut = swatch.dataset.available !== 'true';
+        slide.setAttribute(
+          'aria-label',
+          `Discover ${slide.dataset.title} in ${swatch.dataset.variantTitle}${soldOut ? ' (sold out)' : ''}`,
+        );
       }
     };
 

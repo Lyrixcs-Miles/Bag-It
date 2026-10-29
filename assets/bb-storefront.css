@@ -4,7 +4,9 @@
 }
 
 body.template-index .shopify-section-group-header-group,
-body.template-index .shopify-section-group-footer-group {
+body.template-index .shopify-section-group-footer-group,
+body.template-product .shopify-section-group-header-group,
+body.template-product .shopify-section-group-footer-group {
   display: none;
 }
 
@@ -287,11 +289,12 @@ body.template-index .bb-home-section {
 
 .bb-home__swatch-list button {
   display: grid;
-  width: 42px;
-  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
   flex: 0 0 auto;
   place-items: center;
-  padding: 4px;
+  gap: 2px;
+  padding: 4px 2px;
   border: 1px solid transparent;
   border-radius: 50%;
   background: transparent;
@@ -313,7 +316,22 @@ body.template-index .bb-home-section {
 
 .bb-home__swatch-list button:disabled {
   opacity: 0.4;
-  cursor: not-allowed;
+}
+
+.bb-home__swatch-list button small {
+  font-size: 7px;
+  line-height: 1;
+}
+
+.bb-home__swatch-status {
+  max-width: 62px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bb-home__swatch-list button.is-sold-out {
+  opacity: 0.65;
 }
 
 .bb-home__discover {
@@ -650,8 +668,8 @@ body.template-index .bb-home-section {
 }
 
 .bb-product__swatches label.is-sold-out {
-  opacity: 0.55;
-  cursor: not-allowed;
+  opacity: 0.68;
+  cursor: pointer;
 }
 
 .bb-product__swatch {
@@ -921,8 +939,8 @@ body.template-index .bb-home-section {
   }
 
   .bb-home__swatch-list button {
-    width: 34px;
-    height: 34px;
+    min-width: 36px;
+    min-height: 38px;
   }
 
   .bb-home__swatch-list button span {
