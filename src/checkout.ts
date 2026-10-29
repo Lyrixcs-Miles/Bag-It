@@ -1,8 +1,4 @@
-// Add the secure checkout URL for each color here. Leave blank until connected.
-// Quantity, pricing, availability and delivery are confirmed by the checkout provider.
-export const CHECKOUT_LINKS: Record<string, string> = {
-  'blush-pink': '',
-  'midnight-black': '',
-  'lavender': '',
-  'mint': '',
-};
+// Add a secure checkout URL for a specific product and colour when connected.
+// Keys match the product slug and colour ID, e.g. 'bow-tote:black'.
+// Quantity, pricing, availability and delivery are confirmed at checkout.
+export const CHECKOUT_LINKS: Record<string, string> = {};
