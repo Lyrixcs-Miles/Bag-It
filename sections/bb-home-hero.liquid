@@ -21,10 +21,10 @@
     <div class="bb-home__ghost" aria-hidden="true">{{ section.settings.backdrop_text | escape }}</div>
 
     <header class="bb-home__header">
-      <a class="bb-home__brand" href="{{ routes.root_url }}">{{ shop.name | escape }}</a>
+      <a class="bb-home__brand" href="{{ routes.root_url }}">{{ section.settings.brand_name | escape }}</a>
       <a class="bb-home__cart" href="{{ routes.cart_url }}" aria-label="{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})">
-        <span>{{ 'templates.cart.cart' | t }}</span>
-        <span class="bb-home__cart-count" aria-live="polite">{{ cart.item_count }}</span>
+        <span>Bag</span>
+        <span class="bb-home__cart-count" data-bb-home-cart-count aria-live="polite">{{ cart.item_count }}</span>
       </a>
     </header>
 
@@ -84,7 +84,7 @@
 
       <div class="bb-home__intro">
         <p class="bb-home__eyebrow">{{ section.settings.eyebrow | escape }}</p>
-        <h1>{{ section.settings.heading | escape }}</h1>
+        <h1 data-bb-active-title>{{ featured_collection.products.first.title | escape }}</h1>
         <p class="bb-home__headline" data-bb-headline></p>
         <p class="bb-home__description">
           <span data-bb-color-count></span> colours. Your kind of carry.
@@ -136,6 +136,15 @@
       <a class="bb-home__discover" data-bb-discover href="{{ featured_collection.products.first.url }}">
         {{ section.settings.discover_label | escape }} <span aria-hidden="true">→</span>
       </a>
+      <form class="bb-home__buy-form" action="{{ routes.cart_add_url }}?return_to=%2Fcheckout" method="post">
+        <input type="hidden" name="id" value="{{ featured_collection.products.first.selected_or_first_available_variant.id }}" data-bb-home-buy-variant>
+        <input type="hidden" name="quantity" value="1">
+        <button type="submit" class="bb-home__buy" data-bb-home-buy {% unless featured_collection.products.first.selected_or_first_available_variant.available %}disabled{% endunless %}>
+          {{ 'icon-cart.svg' | inline_asset_content }}
+          <span>Buy now</span>
+          <span class="bb-home__buy-arrow" aria-hidden="true">→</span>
+        </button>
+      </form>
     {%- endif -%}
   </div>
 </section>
@@ -150,6 +159,12 @@
       "type": "collection",
       "id": "collection",
       "label": "Bag collection"
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand name",
+      "default": "Blush&Bloom"
     },
     {
       "type": "text",

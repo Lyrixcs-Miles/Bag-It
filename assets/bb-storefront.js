@@ -7,11 +7,14 @@
 
     const navigation = Array.from(section.querySelectorAll('[data-bb-go-to]'));
     const swatchLists = Array.from(section.querySelectorAll('[data-bb-swatch-list]'));
+    const activeTitle = section.querySelector('[data-bb-active-title]');
     const headline = section.querySelector('[data-bb-headline]');
     const colorCount = section.querySelector('[data-bb-color-count]');
     const selectedColor = section.querySelector('[data-bb-selected-color]');
     const counter = section.querySelector('[data-bb-counter]');
     const discover = section.querySelector('[data-bb-discover]');
+    const buyVariant = section.querySelector('[data-bb-home-buy-variant]');
+    const buyButton = section.querySelector('[data-bb-home-buy]');
     let activeIndex = 0;
     let touchStartX = null;
 
@@ -25,6 +28,10 @@
       if (swatch.dataset.panel) section.style.setProperty('--bb-panel', swatch.dataset.panel);
       slide.href = swatch.dataset.url;
       slide.dataset.variantId = swatch.dataset.variantId;
+      if (slide.dataset.index === String(activeIndex)) {
+        if (buyVariant) buyVariant.value = swatch.dataset.variantId;
+        if (buyButton) buyButton.disabled = swatch.dataset.available !== 'true';
+      }
       slide.setAttribute('aria-label', `Discover ${slide.dataset.title} in ${swatch.dataset.variantTitle}`);
       swatch.closest('[data-bb-swatch-list]').querySelectorAll('[data-bb-swatch]').forEach((button) => {
         button.setAttribute('aria-pressed', String(button === swatch));
@@ -68,6 +75,7 @@
       const selectedSwatch = activeSwatches?.querySelector('[aria-pressed="true"]')
         || activeSwatches?.querySelector('[data-bb-swatch]');
       if (selectedSwatch) updateVariant(activeSlide, selectedSwatch);
+      if (activeTitle) activeTitle.textContent = activeSlide.dataset.title || '';
       if (headline) headline.textContent = activeSlide.dataset.headline || '';
       if (colorCount) {
         const count = activeSwatches?.querySelectorAll('[data-bb-swatch]').length || 0;

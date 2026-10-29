@@ -2430,3 +2430,85 @@ body.template-cart #main-cart-footer .cart__dynamic-checkout-buttons {
     font-size: 10px;
   }
 }
+
+.bb-home .bb-home__intro h1,
+.bb-home .bb-home__empty h1,
+.bb-home .bb-home__headline,
+.bb-home .bb-home__eyebrow {
+  color: #fff;
+}
+
+.bb-home__buy-form {
+  position: absolute;
+  z-index: 4;
+  right: clamp(24px, 4vw, 64px);
+  bottom: clamp(108px, 15vh, 152px);
+  margin: 0;
+}
+
+.bb-home__buy {
+  display: inline-flex;
+  min-width: 174px;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border: 1px solid var(--bb-panel, #d6aa91);
+  border-radius: 32px;
+  background: var(--bb-panel, #d6aa91);
+  color: #30251f;
+  cursor: pointer;
+  font: 600 13px var(--bb-font-body);
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.bb-home__buy:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+}
+
+.bb-home__buy:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.bb-home__buy:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.bb-home__buy .icon-cart {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+}
+
+.bb-home__buy-arrow {
+  margin-left: 4px;
+  font-size: 19px;
+  font-weight: 400;
+}
+
+@media (max-width: 700px) {
+  .bb-home__buy-form {
+    right: auto;
+    bottom: 20px;
+    left: 20px;
+  }
+
+  .bb-home__buy {
+    min-width: 126px;
+    min-height: 44px;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .bb-home__discover {
+    right: 20px;
+    bottom: 25px;
+    gap: 5px;
+    font-size: clamp(19px, 5vw, 25px);
+  }
+}
