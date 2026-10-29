@@ -1,0 +1,41 @@
+<header class="bb-cart-header">
+  <div class="bb-cart-header__shipping">
+    <span aria-hidden="true">✧</span>
+    {{ section.settings.shipping_message | escape }}
+  </div>
+  <div class="bb-cart-header__bar">
+    <a class="bb-cart-header__back" href="{{ routes.all_products_collection_url }}">
+      <span aria-hidden="true">←</span> Shop
+    </a>
+    <a class="bb-cart-header__brand" href="{{ routes.root_url }}">{{ section.settings.brand_name | escape }}</a>
+    <a class="bb-cart-header__cart" href="{{ routes.cart_url }}" aria-label="{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})">
+      <span>{{ 'templates.cart.cart' | t }}</span>
+      <span class="bb-cart-header__count" aria-live="polite">{{ cart.item_count }}</span>
+    </a>
+  </div>
+  <nav class="bb-cart-header__nav" aria-label="Main navigation">
+    <a href="{{ routes.all_products_collection_url }}">Shop all</a>
+    <a href="{{ routes.root_url }}">Home</a>
+    <a href="{{ routes.root_url }}#contact">Contact</a>
+  </nav>
+</header>
+
+{% schema %}
+{
+  "name": "Bag cart header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand name",
+      "default": "Blush&Bloom"
+    },
+    {
+      "type": "text",
+      "id": "shipping_message",
+      "label": "Shipping message",
+      "default": "FREE INTERNATIONAL SHIPPING"
+    }
+  ]
+}
+{% endschema %}
