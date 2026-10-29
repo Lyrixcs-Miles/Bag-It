@@ -4,109 +4,54 @@
 
 ## Source layout
 
-```text
-CNAME                      Custom domain declaration
-index.html                 HTML entry, metadata, and font loading
-package.json               Scripts and direct dependencies
-package-lock.json          Locked dependency graph
-vite.config.ts             React and Tailwind Vite plugins
-tsconfig.json              TypeScript compiler settings
-public/images/             Four transparent tumbler product images
-src/main.tsx               React root, StrictMode, and stylesheet import
-src/App.tsx                Product data, pages, dialogs, and interaction state
-src/checkout.ts            Product-specific checkout URLs
-src/index.css              Shared styles, responsive rules, and animations
-docs/                      Architecture and deployment guides
-```
-
-## Application structure
-
-`src/main.tsx` renders `App` inside React StrictMode. `App` contains the collection carousel and conditionally renders a product page based on the current hash.
-
-The product data is the `IMAGES` array in `src/App.tsx`. Each entry contains an image path, display name, page background color, and panel color. `productSlug` converts the display name to a lowercase slug by replacing spaces with hyphens.
-
-The supporting components live in the same file:
-
-| Component | Responsibility |
+| File | Purpose |
 | --- | --- |
-| `App` | Route selection, carousel state, product pages, and scroll reveals. |
-| `BagControl` | Local bag persistence, bag dialog, and quantity controls. |
-| `BuyButton` | Add-to-bag action and product purchase-summary dialog. |
-| `ProductExtras` | Zoom dialog and illustrated accessory preview. |
+| `src/products.ts` | Three products, their colour variants, image paths, route and bag-key helpers. |
+| `src/App.tsx` | Homepage carousel, product pages, galleries, zoom, purchase summaries and shopping bag. |
+| `src/checkout.ts` | Optional checkout URLs keyed by product slug and colour ID. |
+| `src/index.css` | Typography, responsive layouts, dialogs and animations. |
+| `public/images/bags/transparent/` | All 14 transparent studio product cutouts used by the storefront. |
+| `public/images/bags/` | Preserved source photographs. |
+| `docs/product-image-prompts.json` | Image generation prompts and source-to-output mapping. |
+| `index.html` | Shared metadata, favicon and font loading. |
+| `.github/workflows/deploy.yml` | Existing GitHub Pages build and deployment workflow. |
 
-## Routing and page state
+`src/main.tsx` renders `App` in React StrictMode. The site is a static application with no backend.
 
-`productFromHash` matches `window.location.hash` against the known product routes. The `hashchange` listener updates the product index and active carousel color. An unmatched hash renders the collection view; there is no dedicated 404 page.
+## Products and routes
 
-Product section links prevent normal hash navigation and call `scrollIntoView` instead. This keeps the product route intact while scrolling within `.product-page`.
+`PRODUCTS` separates product identity from variant identity. Each product has a stable slug, name, description, collection theme, details, and a variant array. Each variant has an ID, label, swatch, photograph and matching `theme` with background and accent colours. Selecting a variant updates the whole product-page background, purchase button, selected controls and zoom background. The palettes keep white page text and dark button text readable. Reduced-motion preferences disable the background transition. The black weekender also has an alternate photograph.
 
-The document title changes for each product. The HTML description and social metadata in `index.html` remain shared across routes. There is no server-side rendering or per-product social preview generation.
+`readRoute` reads hashes such as `#/products/foldaway-tote?color=navy`. Unknown colours fall back to the product's first variant. Unknown product routes show the collection. The `hashchange` listener supports direct links and browser back/forward navigation.
 
-The product page is keyed by color name, so changing color remounts its subtree. The product heading receives focus without forcing a page scroll. Scroll reveal effects use an `IntersectionObserver` rooted in the product page's scroll container, with cleanup when the selected product changes.
+Route state stores the hash and resolves the current product from the latest catalog on each render. Product comparisons use stable slugs, so live catalog updates cannot cause the current bag to appear in its own recommendations or reset its collection index.
 
-## Bag data flow
+The product page is keyed by product slug. Changing a colour preserves the page and its scroll position, while resetting the gallery and purchase controls to the selected variant. Changing products mounts the new page at the top. Section links scroll within the product page without changing the route.
 
-`addToBag` dispatches a `bowcarry:add-to-bag` custom event containing a product slug and quantity. A mounted `BagControl` handles that event, updates React state, and opens the bag dialog.
+## Galleries and purchase controls
 
-The saved format maps product slugs to quantities:
+The selected variant controls the main photograph, colour label, image zoom, purchase summary and add-to-bag action. Thumbnails show the product's colour photographs, with alternate views where supplied. Zoom ranges from 100% to 300% in 50% steps.
+
+The homepage has colour swatches for the featured product. Selecting one updates its transparent photograph, background, accents, purchase summary and product link together. Selected colour IDs are remembered per product during the current visit, including when returning from a product page. Its carousel derives navigation and position from the product count. It supports style buttons, previous/next buttons, arrow keys and touch swipes. Keyboard carousel navigation is suspended while a dialog is open or an interactive control is focused.
+
+## Browser-local shopping bag
+
+`addToBag` dispatches `bowcarry:add-to-bag` with a product-and-colour key and quantity. `BagControl` updates state and opens the bag dialog. A saved entry looks like:
 
 ```json
 {
-  "blush-pink": 2,
-  "midnight-black": 0,
-  "lavender": 1,
-  "mint": 0
+  "bow-tote:black": 1,
+  "bow-tote:brown": 2,
+  "foldaway-tote:navy": 1
 }
 ```
 
-`readBag` accepts finite numeric quantities, rounds them down, and clamps them to 0�10 for known products. Invalid JSON falls back to an empty bag. Unknown product keys are excluded when reading persisted data.
+`readBag` accepts known variant keys and finite numeric quantities, rounds down, and clamps to 0–10. Invalid JSON falls back to an empty bag. The storage key is `bowcarry-shopping-bag-v2`; prior tumbler entries are not altered.
 
-Saving happens in a React effect. A separate `storage` listener reloads saved data when another tab changes the bag key or clears storage. This is browser-local persistence, not inventory validation or an order record.
+Saving runs in a React effect. A `storage` listener synchronizes other tabs. If persistence fails, the bag keeps the current in-memory selection and displays a notice. It does not synchronize across devices or validate inventory.
 
-## Purchase and accessory state
+## Content changes
 
-Each `BuyButton` owns a purchase dialog and quantity state. The quantity selector is shown only while checkout is unconfigured. A configured checkout link is rendered directly; quantities are not added to its URL.
+Edit `src/products.ts` to change product descriptions, colour labels, image paths or swatches. Keep slugs and variant IDs stable to preserve links and saved bags. Add supplier-confirmed specifications only after verifying them; prices, materials, dimensions, capacity and inventory are not defined.
 
-`ProductExtras` keeps zoom level and accessory toggles in local component state. Those toggles affect only the SVG preview. They are not included in the add-to-bag event or persisted storage.
-
-## Styling
-
-`src/index.css` imports Tailwind and defines the Anton and Inter font tokens. The collection hero also uses Tailwind utility classes and inline carousel positioning.
-
-Product pages receive `--product-bg` and `--product-panel` custom properties from their selected color. Product styling, shared responsive composition, dialog styles, and the final product-page refinements are in `src/index.css`.
-
-Some selectors have multiple definitions as responsive and refinement rules override earlier base styles. Read the later rules before changing an earlier declaration. Scope product page changes to product classes to avoid altering the approved collection hero.
-
-The document itself does not scroll; the collection and product views provide their own viewport-height scrolling containers. Account for this when adding sticky elements, section links, or scroll-triggered effects.
-
-## Updating content
-
-### Change a color or product name
-
-Update its entry in `IMAGES`. Names determine route slugs, saved-bag keys, and checkout lookup keys, so renaming a product can break old links and leave earlier stored quantities unused. Update `src/checkout.ts` and this documentation when a slug changes.
-
-Swatch colors are also defined separately in the collection and product markup. Keep those palettes aligned with the product data.
-
-### Replace product photography
-
-Replace the relevant PNG in `public/images/`, or update the source path in `IMAGES`. Preserve transparency and leave enough room around the full accessory set for `object-fit: contain` layouts.
-
-Check the collection hero, main product image, zoom viewer, detail crops, style illustration, related products, and bag thumbnail after replacing an image. Several sections reuse the same source with different cropping or scaling.
-
-### Change product descriptions or FAQs
-
-Edit the product page markup in `src/App.tsx`. Most copy is shared between colors, with the selected product name inserted dynamically. Keep included-accessory wording consistent across the product page, purchase summary, and bag.
-
-### Add a fifth product
-
-Adding an array entry alone is insufficient. The carousel uses four-item modulo arithmetic, two independently defined swatch palettes, and layout assumptions built around four colors. Update these together with checkout keys, related products, route documentation, and manual verification.
-
-### Change the brand or social metadata
-
-Update the collection header, product header/footer, document-title effect, and `index.html` metadata. Font loading is also configured in `index.html`.
-
-## Maintenance boundaries
-
-The application currently has no network-backed product catalog, authentication, backend service, or administrative UI. Content changes require source edits and a new build.
-
-Keep credentials out of frontend source and checkout URLs. Anything bundled into this application can be inspected by visitors. If future integrations require secrets, add a server-side boundary rather than embedding them in the Vite bundle.
+Preserve original photographs in `public/images/bags/`. Put final transparent PNGs in `public/images/bags/transparent/`; keep their alpha channel intact. Image containers are transparent so cutouts blend into the collection theme. Current paths assume deployment at the domain root. Keep shared metadata in `index.html` aligned with the collection.
