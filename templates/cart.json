@@ -3,7 +3,7 @@
     "cart-header": {
       "type": "bb-cart-header",
       "settings": {
-        "brand_name": "Blush&Bloom",
+        "brand_name": "BAG-IT",
         "shipping_message": "FREE INTERNATIONAL SHIPPING"
       }
     },
@@ -42,7 +42,7 @@
     "custom-footer": {
       "type": "bb-cart-footer",
       "settings": {
-        "brand_name": "Blush&Bloom",
+        "brand_name": "BAG-IT",
         "newsletter_heading": "A little note from us."
       }
     }
