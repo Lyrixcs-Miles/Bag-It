@@ -57,7 +57,7 @@
   <div class="bb-product__topbar">
     <a href="{{ routes.root_url }}" class="bb-product__back"><span aria-hidden="true">←</span> Collection</a>
     <a href="{{ routes.root_url }}" class="bb-product__brand">{{ section.settings.brand_name | escape }}</a>
-    <a href="{{ routes.cart_url }}" class="bb-product__cart">{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})</a>
+    <a href="{{ routes.cart_url }}" class="bb-product__cart">{{ 'templates.cart.cart' | t }} (<span data-bb-cart-count>{{ cart.item_count }}</span>)</a>
   </div>
 
   <div class="bb-product__navigation" aria-label="In this page">
@@ -138,7 +138,7 @@
         {%- endif -%}
       </div>
 
-      {% form 'product', product, id: product_form_id, class: 'bb-product__form' %}
+      {% form 'product', product, id: product_form_id, class: 'bb-product__form', data-type: 'add-to-cart-form' %}
         {%- if form.errors -%}
           <div class="bb-product__errors" role="alert">{{ form.errors | default_errors }}</div>
         {%- endif -%}
@@ -196,10 +196,12 @@
             data-bb-buy-now
             {% unless current_variant.available %}disabled{% endunless %}
           >
-            Buy now <span aria-hidden="true">→</span>
+            <span>Buy now</span><span aria-hidden="true">→</span>
           </button>
         </div>
       {% endform %}
+
+      <div class="bb-product__cart-error" data-bb-cart-error role="alert" hidden></div>
 
       <div class="bb-product__highlights" id="bb-product-features">
         <h2>It's all in the details</h2>
@@ -220,6 +222,25 @@
       <a class="bb-product__collection-link" href="{{ routes.root_url }}">Explore the collection <span aria-hidden="true">→</span></a>
     </div>
   </div>
+
+  <dialog class="bb-product__cart-dialog" data-bb-cart-dialog aria-labelledby="bb-cart-dialog-title">
+    <button type="button" class="bb-product__cart-dialog-close" data-bb-close-cart aria-label="Close">×</button>
+    <p class="bb-product__eyebrow">A GOOD CHOICE</p>
+    <h2 id="bb-cart-dialog-title" data-bb-cart-dialog-title>Added to your bag</h2>
+    <div class="bb-product__cart-dialog-item">
+      {%- if current_image != blank -%}
+        <img src="{{ current_image | strip | escape }}" alt="" width="96" height="96" data-bb-cart-dialog-image>
+      {%- endif -%}
+      <div>
+        <strong>{{ product.title | escape }}</strong>
+        <span data-bb-cart-dialog-variant>{{ current_variant.title | escape }}</span>
+        <span data-bb-cart-dialog-price>{{ current_variant.price | money }}</span>
+      </div>
+    </div>
+    <p class="bb-product__cart-dialog-message" data-bb-cart-dialog-message>Your bag is ready whenever you are.</p>
+    <a class="bb-product__cart-dialog-checkout" href="{{ routes.root_url }}checkout" data-bb-cart-dialog-checkout>Continue to checkout <span aria-hidden="true">→</span></a>
+    <a class="bb-product__cart-dialog-view" href="{{ routes.cart_url }}">View your bag</a>
+  </dialog>
 
   <div class="bb-product__ticker" aria-hidden="true">
     <span>CARRY. STYLE. REPEAT.</span><span class="bb-product__sparkle">✧</span>

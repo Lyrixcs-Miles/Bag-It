@@ -10,7 +10,7 @@
     <a class="bb-cart-header__brand" href="{{ routes.root_url }}">{{ section.settings.brand_name | escape }}</a>
     <a class="bb-cart-header__cart" href="{{ routes.cart_url }}" aria-label="{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})">
       <span>{{ 'templates.cart.cart' | t }}</span>
-      <span class="bb-cart-header__count" aria-live="polite">{{ cart.item_count }}</span>
+      <span class="bb-cart-header__count" data-bb-cart-count aria-live="polite">{{ cart.item_count }}</span>
     </a>
   </div>
   <nav class="bb-cart-header__nav" aria-label="Main navigation">
