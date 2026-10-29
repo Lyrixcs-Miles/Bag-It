@@ -55,9 +55,16 @@
     {{ section.settings.shipping_message | escape }}
   </div>
   <div class="bb-product__topbar">
-    <a href="{{ routes.root_url }}" class="bb-product__back"><span aria-hidden="true">←</span> Collection</a>
+    <a href="{{ routes.root_url }}" class="bb-product__back" aria-label="Back to collection">
+      <span aria-hidden="true">←</span>
+      <span class="bb-product__back-label">Back to collection</span>
+    </a>
     <a href="{{ routes.root_url }}" class="bb-product__brand">{{ section.settings.brand_name | escape }}</a>
-    <a href="{{ routes.cart_url }}" class="bb-product__cart">{{ 'templates.cart.cart' | t }} (<span data-bb-cart-count>{{ cart.item_count }}</span>)</a>
+    <a href="{{ routes.cart_url }}" class="bb-product__cart" aria-label="{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})">
+      {{ 'icon-cart.svg' | inline_asset_content }}
+      <span class="bb-product__cart-label">Bag</span>
+      <span class="bb-product__cart-count" data-bb-cart-count>{{ cart.item_count }}</span>
+    </a>
   </div>
 
   <div class="bb-product__navigation" aria-label="In this page">
@@ -242,10 +249,18 @@
     <a class="bb-product__cart-dialog-view" href="{{ routes.cart_url }}">View your bag</a>
   </dialog>
 
+  {%- comment -%} Two identical groups so the strip can loop without a gap. {%- endcomment -%}
   <div class="bb-product__ticker" aria-hidden="true">
-    <span>CARRY. STYLE. REPEAT.</span><span class="bb-product__sparkle">✧</span>
-    <span>YOUR EVERYDAY PLUS ONE.</span><span class="bb-product__sparkle">✧</span>
-    <span>CARRY. STYLE. REPEAT.</span>
+    <div class="bb-product__ticker-track">
+      {%- for group in (1..2) -%}
+        <div class="bb-product__ticker-group">
+          {%- for repeat in (1..3) -%}
+            <span>CARRY. STYLE. REPEAT.</span><span class="bb-product__sparkle">✧</span>
+            <span>YOUR EVERYDAY PLUS ONE.</span><span class="bb-product__sparkle">✧</span>
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
   </div>
 
   <section class="bb-product__faq">
@@ -327,7 +342,7 @@
       "type": "text",
       "id": "brand_name",
       "label": "Brand name",
-      "default": "Blush&Bloom"
+      "default": "BAG-IT"
     },
     {
       "type": "text",
