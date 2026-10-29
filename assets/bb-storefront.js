@@ -117,7 +117,10 @@
     const price = section.querySelector('[data-bb-price]');
     const comparePrice = section.querySelector('[data-bb-compare-price]');
     const colorLabel = section.querySelector('[data-bb-selected-color]');
+    const photoColor = section.querySelector('[data-bb-photo-color]');
     const addButton = section.querySelector('[data-bb-add]');
+    const buyNowButton = section.querySelector('[data-bb-buy-now]');
+    const galleryVariants = Array.from(section.querySelectorAll('[data-bb-gallery-variant]'));
     const zoomDialog = section.querySelector('[data-bb-zoom-dialog]');
     const zoomImage = section.querySelector('[data-bb-zoom-image]');
 
@@ -135,10 +138,15 @@
         comparePrice.hidden = !variant.dataset.comparePrice;
       }
       if (colorLabel) colorLabel.textContent = variant.dataset.variantTitle || '';
+      if (photoColor) photoColor.textContent = (variant.dataset.variantTitle || '').toUpperCase();
+      galleryVariants.forEach((thumbnail) => {
+        thumbnail.setAttribute('aria-pressed', String(thumbnail.dataset.bbGalleryVariant === variant.value));
+      });
       if (addButton) {
         addButton.disabled = variant.dataset.available !== 'true';
         addButton.textContent = variant.dataset.available === 'true' ? 'Add to bag' : 'Sold out';
       }
+      if (buyNowButton) buyNowButton.disabled = variant.dataset.available !== 'true';
       const url = new URL(window.location.href);
       url.searchParams.set('variant', variant.value);
       window.history.replaceState({}, '', url);
@@ -148,15 +156,12 @@
       variant.addEventListener('change', () => updateProduct(variant));
     });
 
-    section.querySelectorAll('[data-bb-gallery-image]').forEach((thumbnail) => {
+    galleryVariants.forEach((thumbnail) => {
       thumbnail.addEventListener('click', () => {
-        if (image) {
-          image.src = thumbnail.dataset.image;
-          image.alt = thumbnail.dataset.alt || '';
-        }
-        section.querySelectorAll('[data-bb-gallery-image]').forEach((item) => {
-          item.setAttribute('aria-pressed', String(item === thumbnail));
-        });
+        const variant = form?.querySelector(`[data-bb-variant][value="${thumbnail.dataset.bbGalleryVariant}"]`);
+        if (!(variant instanceof HTMLInputElement)) return;
+        variant.checked = true;
+        variant.dispatchEvent(new Event('change', { bubbles: true }));
       });
     });
 

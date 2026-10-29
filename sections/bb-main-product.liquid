@@ -50,14 +50,18 @@
   data-bb-product
   style="--bb-product-bg: {{ current_background | strip | default: section.settings.background_color }}; --bb-product-panel: {{ current_panel | strip | default: section.settings.panel_color }};"
 >
+  <div class="bb-product__shipping">
+    <span aria-hidden="true">♧</span>
+    {{ section.settings.shipping_message | escape }}
+  </div>
   <div class="bb-product__topbar">
     <a href="{{ routes.root_url }}" class="bb-product__back"><span aria-hidden="true">←</span> Collection</a>
-    <a href="{{ routes.root_url }}" class="bb-product__brand">{{ shop.name | escape }}</a>
+    <a href="{{ routes.root_url }}" class="bb-product__brand">{{ section.settings.brand_name | escape }}</a>
     <a href="{{ routes.cart_url }}" class="bb-product__cart">{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})</a>
   </div>
 
   <div class="bb-product__navigation" aria-label="In this page">
-    <a href="#bb-product-description">Details</a>
+    <a href="#bb-product-description">The details</a>
     <a href="#bb-product-colours">Choose your colour</a>
     <a href="#bb-product-related">More bags</a>
   </div>
@@ -78,20 +82,26 @@
         {%- else -%}
           <div class="bb-product__no-image">Add product photos in Shopify to show this bag.</div>
         {%- endif -%}
-        <button type="button" class="bb-product__zoom" data-bb-zoom aria-label="View product image larger">＋</button>
+        <button type="button" class="bb-product__zoom" data-bb-zoom aria-label="View product image larger">⌕</button>
+        <div class="bb-product__photo-caption">
+          <span data-bb-photo-color>{{ current_variant.title | escape | upcase }}</span>
+          <span>0{{ product_index }} / 03</span>
+        </div>
       </div>
-      {%- if product.images.size > 1 -%}
+      {%- if product.variants.size > 1 -%}
         <div class="bb-product__thumbnails" aria-label="Product images">
-          {%- for image in product.images -%}
+          {%- for variant in product.variants -%}
+            {%- capture variant_image -%}{%- render 'bb-variant-image', product: product, variant: variant -%}{%- endcapture -%}
             <button
               type="button"
-              data-bb-gallery-image
-              data-image="{{ image | image_url: width: 1400 }}"
-              data-alt="{{ image.alt | default: product.title | escape }}"
-              aria-label="View image {{ forloop.index }}"
-              {% if forloop.first %}aria-pressed="true"{% else %}aria-pressed="false"{% endif %}
+              data-bb-gallery-variant="{{ variant.id }}"
+              aria-label="Show {{ variant.title | escape }} photo"
+              {% if variant.id == current_variant.id %}aria-pressed="true"{% else %}aria-pressed="false"{% endif %}
             >
-              {{ image | image_url: width: 180 | image_tag: loading: 'lazy', alt: image.alt | default: product.title }}
+              {%- if variant_image != blank -%}
+                <img src="{{ variant_image | strip | escape }}" alt="{{ variant.title | escape }}" width="180" height="180" loading="lazy">
+              {%- endif -%}
+              <span>{{ variant.title | escape }}</span>
             </button>
           {%- endfor -%}
         </div>
@@ -174,15 +184,21 @@
         {%- endif -%}
 
         <div class="bb-product__purchase">
-          <label class="bb-product__quantity" for="bb-quantity-{{ section.id }}">Quantity</label>
-          <input id="bb-quantity-{{ section.id }}" type="number" name="quantity" min="1" value="1" inputmode="numeric">
+          <input type="hidden" name="quantity" value="1">
           <button class="bb-product__add" type="submit" name="add" data-bb-add {% unless current_variant.available %}disabled{% endunless %}>
             {%- if current_variant.available -%}Add to bag{%- else -%}Sold out{%- endif -%}
           </button>
+          <button
+            class="bb-product__buy-now"
+            type="submit"
+            name="add"
+            formaction="{{ routes.cart_add_url }}?return_to=%2Fcheckout"
+            data-bb-buy-now
+            {% unless current_variant.available %}disabled{% endunless %}
+          >
+            Buy now <span aria-hidden="true">→</span>
+          </button>
         </div>
-        {%- if section.settings.show_dynamic_checkout -%}
-          <div class="bb-product__dynamic-checkout">{{ form | payment_button }}</div>
-        {%- endif -%}
       {% endform %}
 
       <div class="bb-product__highlights" id="bb-product-features">
@@ -274,7 +290,7 @@
   </section>
 
   <footer class="bb-product__footer">
-    <a href="{{ routes.root_url }}" class="bb-product__footer-brand">{{ shop.name | escape }}</a>
+    <a href="{{ routes.root_url }}" class="bb-product__footer-brand">{{ section.settings.brand_name | escape }}</a>
     <span>{{ section.settings.footer_tagline | escape }}</span>
     <a href="{{ routes.root_url }}">Back to collection <span aria-hidden="true">→</span></a>
   </footer>
@@ -286,6 +302,18 @@
   "tag": "section",
   "class": "bb-product-section",
   "settings": [
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand name",
+      "default": "Blush&Bloom"
+    },
+    {
+      "type": "text",
+      "id": "shipping_message",
+      "label": "Shipping message",
+      "default": "FREE INTERNATIONAL SHIPPING"
+    },
     {
       "type": "text",
       "id": "eyebrow",
@@ -303,12 +331,6 @@
       "id": "panel_color",
       "label": "Image panel",
       "default": "#D980A2"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_dynamic_checkout",
-      "label": "Show accelerated checkout buttons",
-      "default": false
     },
     {
       "type": "text",

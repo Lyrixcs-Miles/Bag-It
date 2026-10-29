@@ -3,11 +3,13 @@
     "main": {
       "type": "bb-main-product",
       "settings": {
+        "brand_name": "Blush&Bloom",
+        "shipping_message": "FREE INTERNATIONAL SHIPPING",
         "eyebrow": "THE CARRY COLLECTION",
         "background_color": "#B8567C",
         "panel_color": "#D980A2",
-        "show_dynamic_checkout": false,
-        "note": "Secure checkout powered by Shopify."
+        "note": "Your selected colour is ready to go.",
+        "footer_tagline": "Everyday essentials. A little more personality."
       }
     }
   },
