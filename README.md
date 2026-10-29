@@ -1,4 +1,4 @@
-# Bag-It Shopify theme (built on Dawn)
+# BAG-IT Shopify theme (built on Dawn)
 
 ## Store setup
 
