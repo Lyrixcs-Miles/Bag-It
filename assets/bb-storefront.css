@@ -436,6 +436,15 @@ body.template-index .bb-home-section {
   color: inherit;
 }
 
+.bb-product .rte,
+.bb-product .rte :not(a) {
+  color: inherit;
+}
+
+.bb-product .rte a {
+  color: inherit;
+}
+
 .bb-product__topbar {
   position: relative;
   display: flex;
@@ -760,6 +769,171 @@ body.template-index .bb-home-section {
   opacity: 0.8;
 }
 
+.bb-product__collection-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.bb-product__ticker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 4vw, 52px);
+  overflow: hidden;
+  padding: 22px 24px;
+  border-block: 1px solid #ffffff40;
+  font: 400 clamp(22px, 2.8vw, 38px) / 1.15 var(--bb-font-display);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.bb-product__sparkle {
+  font: 400 0.7em var(--bb-font-body);
+}
+
+.bb-product__faq {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(28px, 5vw, 72px);
+  padding: clamp(52px, 7vw, 90px) max(5vw, calc((100vw - 1300px) / 2));
+  background: #00000012;
+}
+
+.bb-product__faq-heading h2,
+.bb-product__related-heading h2 {
+  margin: 14px 0 18px;
+  font: 400 clamp(36px, 4.2vw, 60px) / 1.08 var(--bb-font-display);
+  text-transform: uppercase;
+}
+
+.bb-product__faq-list details {
+  padding: 20px 0;
+  border-bottom: 1px solid #ffffff40;
+}
+
+.bb-product__faq-list summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.bb-product__faq-list p {
+  max-width: 580px;
+  margin: 14px 0 0;
+  font-size: 13px;
+  line-height: 1.8;
+  opacity: 0.85;
+}
+
+.bb-product__related {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: clamp(56px, 7vw, 90px) 5vw;
+  scroll-margin-top: 24px;
+}
+
+.bb-product__related-heading {
+  margin-bottom: 36px;
+}
+
+.bb-product__related-heading h2 span {
+  opacity: 0.62;
+}
+
+.bb-product__related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(20px, 4vw, 56px);
+}
+
+.bb-product__related-card {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.bb-product__related-image {
+  position: relative;
+  display: flex;
+  height: clamp(300px, 43vw, 520px);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: clamp(20px, 4vw, 48px);
+  border-radius: 16px;
+  background: #ffffff08;
+}
+
+.bb-product__related-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 250ms ease;
+}
+
+.bb-product__related-card:hover .bb-product__related-image img {
+  transform: scale(1.04) rotate(-2deg);
+}
+
+.bb-product__related-image > span {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffffff25;
+  font-size: 20px;
+}
+
+.bb-product__related-card h3 {
+  margin: 16px 0 5px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.bb-product__related-card p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+  opacity: 0.75;
+}
+
+.bb-product__footer {
+  display: flex;
+  min-height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 5vw;
+  border-top: 1px solid #ffffff35;
+  font-size: 10px;
+}
+
+.bb-product__footer a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.bb-product__footer-brand {
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.bb-product__footer > a:last-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .bb-product__errors {
   margin: 14px 0;
   color: #fff;
@@ -1027,6 +1201,78 @@ body.template-index .bb-home-section {
   .bb-product__add {
     grid-column: 2;
     grid-row: 2;
+  }
+
+  .bb-product__ticker {
+    justify-content: flex-start;
+    gap: 22px;
+    padding-block: 18px;
+    font-size: 24px;
+  }
+
+  .bb-product__faq {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 48px 6vw;
+  }
+
+  .bb-product__faq-heading h2,
+  .bb-product__related-heading h2 {
+    font-size: clamp(36px, 9vw, 54px);
+  }
+
+  .bb-product__faq-list details {
+    padding: 16px 0;
+  }
+
+  .bb-product__faq-list summary,
+  .bb-product__faq-list p {
+    font-size: 12px;
+  }
+
+  .bb-product__related {
+    padding: 52px 6vw;
+  }
+
+  .bb-product__related-heading {
+    margin-bottom: 24px;
+  }
+
+  .bb-product__related-grid {
+    gap: 14px;
+  }
+
+  .bb-product__related-image {
+    height: clamp(230px, 65vw, 400px);
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .bb-product__related-image > span {
+    right: 8px;
+    bottom: 8px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .bb-product__related-card h3 {
+    margin-top: 12px;
+    font-size: 13px;
+  }
+
+  .bb-product__related-card p {
+    font-size: 10px;
+  }
+
+  .bb-product__footer {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 24px 6vw;
+  }
+
+  .bb-product__footer > span {
+    order: 3;
+    width: 100%;
   }
 }
 
