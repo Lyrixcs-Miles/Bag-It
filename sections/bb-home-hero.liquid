@@ -21,7 +21,7 @@
     <div class="bb-home__ghost" aria-hidden="true">{{ section.settings.backdrop_text | escape }}</div>
 
     <header class="bb-home__header">
-      <a class="bb-home__brand" href="{{ routes.root_url }}">{{ section.settings.brand_name | escape }}</a>
+      <a class="bb-home__brand" href="{{ routes.root_url }}">{{ shop.name | escape }}</a>
       <a class="bb-home__cart" href="{{ routes.cart_url }}" aria-label="{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})">
         <span>Bag</span>
         <span class="bb-home__cart-count" data-bb-home-cart-count aria-live="polite">{{ cart.item_count }}</span>
@@ -84,7 +84,7 @@
 
       <div class="bb-home__intro">
         <p class="bb-home__eyebrow">{{ section.settings.eyebrow | escape }}</p>
-        <h1 data-bb-active-title>{{ featured_collection.products.first.title | escape }}</h1>
+        <h1>{{ section.settings.heading | escape }}</h1>
         <p class="bb-home__headline" data-bb-headline></p>
         <p class="bb-home__description">
           <span data-bb-color-count></span> colours. Your kind of carry.
@@ -159,12 +159,6 @@
       "type": "collection",
       "id": "collection",
       "label": "Bag collection"
-    },
-    {
-      "type": "text",
-      "id": "brand_name",
-      "label": "Brand name",
-      "default": "Blush&Bloom"
     },
     {
       "type": "text",

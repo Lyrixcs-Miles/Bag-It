@@ -2431,13 +2431,6 @@ body.template-cart #main-cart-footer .cart__dynamic-checkout-buttons {
   }
 }
 
-.bb-home .bb-home__intro h1,
-.bb-home .bb-home__empty h1,
-.bb-home .bb-home__headline,
-.bb-home .bb-home__eyebrow {
-  color: #fff;
-}
-
 .bb-home__buy-form {
   position: absolute;
   z-index: 4;
