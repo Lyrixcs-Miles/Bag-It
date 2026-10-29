@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "hero": {
+      "type": "bb-home-hero",
+      "settings": {
+        "collection": "all",
+        "eyebrow": "THE CARRY COLLECTION",
+        "heading": "Find your everyday plus one.",
+        "backdrop_text": "CARRY IN STYLE",
+        "shipping_message": "Free international shipping",
+        "discover_label": "DISCOVER IT",
+        "background_color": "#B8567C",
+        "panel_color": "#D980A2"
+      }
+    }
+  },
+  "order": [
+    "hero"
+  ]
+}

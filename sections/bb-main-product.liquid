@@ -1,0 +1,216 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant | default: product.variants.first
+  assign product_form_id = 'bb-product-form-' | append: section.id
+  assign current_image_alt = current_variant.featured_image.alt | default: product.featured_image.alt | default: product.title
+  capture current_image
+    render 'bb-variant-image', product: product, variant: current_variant
+  endcapture
+  capture current_background
+    render 'bb-variant-theme', product: product, variant: current_variant, mode: 'background'
+  endcapture
+  capture current_panel
+    render 'bb-variant-theme', product: product, variant: current_variant, mode: 'panel'
+  endcapture
+  assign product_headline = product.metafields.custom.headline.value
+-%}
+
+<section
+  class="bb-product"
+  data-bb-product
+  style="--bb-product-bg: {{ current_background | strip | default: section.settings.background_color }}; --bb-product-panel: {{ current_panel | strip | default: section.settings.panel_color }};"
+>
+  <div class="bb-product__topbar">
+    <a href="{{ routes.root_url }}" class="bb-product__back"><span aria-hidden="true">←</span> Collection</a>
+    <a href="{{ routes.root_url }}" class="bb-product__brand">{{ shop.name | escape }}</a>
+    <a href="{{ routes.cart_url }}" class="bb-product__cart">{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})</a>
+  </div>
+
+  <div class="bb-product__navigation" aria-label="In this page">
+    <a href="#bb-product-description">Details</a>
+    {%- if product.metafields.custom.highlights.value != blank -%}
+      <a href="#bb-product-features">What makes it special</a>
+    {%- endif -%}
+  </div>
+
+  <div class="bb-product__layout" id="bb-product-detail">
+    <div class="bb-product__gallery" data-bb-gallery>
+      <div class="bb-product__photo">
+        <span class="bb-product__photo-label">THE CARRY COLLECTION</span>
+        {%- if current_image != blank -%}
+          <img
+            src="{{ current_image | strip | escape }}"
+            alt="{{ current_image_alt | escape }}"
+            width="1200"
+            height="1200"
+            data-bb-product-image
+            fetchpriority="high"
+          >
+        {%- else -%}
+          <div class="bb-product__no-image">Add product photos in Shopify to show this bag.</div>
+        {%- endif -%}
+        <button type="button" class="bb-product__zoom" data-bb-zoom aria-label="View product image larger">＋</button>
+      </div>
+      {%- if product.images.size > 1 -%}
+        <div class="bb-product__thumbnails" aria-label="Product images">
+          {%- for image in product.images -%}
+            <button
+              type="button"
+              data-bb-gallery-image
+              data-image="{{ image | image_url: width: 1400 }}"
+              data-alt="{{ image.alt | default: product.title | escape }}"
+              aria-label="View image {{ forloop.index }}"
+              {% if forloop.first %}aria-pressed="true"{% else %}aria-pressed="false"{% endif %}
+            >
+              {{ image | image_url: width: 180 | image_tag: loading: 'lazy', alt: image.alt | default: product.title }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      <dialog class="bb-product__zoom-dialog" data-bb-zoom-dialog aria-label="Product image">
+        <button type="button" data-bb-close-zoom aria-label="Close image">×</button>
+        <img
+          src="{{ current_image | strip | escape }}"
+          alt="{{ current_image_alt | escape }}"
+          width="1200"
+          height="1200"
+          data-bb-zoom-image
+        >
+      </dialog>
+    </div>
+
+    <div class="bb-product__details">
+      <p class="bb-product__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      <h1>{{ product.title | escape }}</h1>
+      {%- if product_headline != blank -%}
+        <p class="bb-product__headline">{{ product_headline | escape }}</p>
+      {%- endif -%}
+      <div class="bb-product__price" role="status" aria-live="polite">
+        <span data-bb-price>{{ current_variant.price | money }}</span>
+        {%- if current_variant.compare_at_price > current_variant.price -%}
+          <s data-bb-compare-price>{{ current_variant.compare_at_price | money }}</s>
+        {%- else -%}
+          <s data-bb-compare-price hidden></s>
+        {%- endif -%}
+      </div>
+
+      {% form 'product', product, id: product_form_id, class: 'bb-product__form' %}
+        {%- if form.errors -%}
+          <div class="bb-product__errors" role="alert">{{ form.errors | default_errors }}</div>
+        {%- endif -%}
+
+        {%- if product.variants.size > 1 -%}
+          <fieldset class="bb-product__variants">
+            <legend>Colour <strong data-bb-selected-color>{{ current_variant.title | escape }}</strong></legend>
+            <div class="bb-product__swatches">
+              {%- for variant in product.variants -%}
+                {%- capture variant_image -%}{%- render 'bb-variant-image', product: product, variant: variant -%}{%- endcapture -%}
+                {%- capture swatch_color -%}{%- render 'bb-swatch-color', variant: variant -%}{%- endcapture -%}
+                {%- capture variant_background -%}{%- render 'bb-variant-theme', product: product, variant: variant, mode: 'background' -%}{%- endcapture -%}
+                {%- capture variant_panel -%}{%- render 'bb-variant-theme', product: product, variant: variant, mode: 'panel' -%}{%- endcapture -%}
+                <input
+                  type="radio"
+                  name="id"
+                  id="bb-variant-{{ section.id }}-{{ variant.id }}"
+                  value="{{ variant.id }}"
+                  data-bb-variant
+                  data-variant-title="{{ variant.title | escape }}"
+                  data-image="{{ variant_image | strip | escape }}"
+                  data-background="{{ variant_background | strip | default: section.settings.background_color }}"
+                  data-panel="{{ variant_panel | strip | default: section.settings.panel_color }}"
+                  data-price="{{ variant.price | money | escape }}"
+                  data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}"
+                  data-available="{{ variant.available }}"
+                  {% if variant.id == current_variant.id %}checked{% endif %}
+                  {% unless variant.available %}disabled{% endunless %}
+                >
+                <label
+                  for="bb-variant-{{ section.id }}-{{ variant.id }}"
+                  style="--bb-swatch: {{ swatch_color | strip }};"
+                  {% unless variant.available %}class="is-sold-out"{% endunless %}
+                >
+                  <span class="bb-product__swatch" aria-hidden="true"></span>
+                  <span>{{ variant.title | escape }}</span>
+                  {%- unless variant.available -%}<span class="bb-product__sold-out">Sold out</span>{%- endunless -%}
+                </label>
+              {%- endfor -%}
+            </div>
+          </fieldset>
+        {%- else -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-bb-variant data-image="{{ current_image | strip | escape }}" data-price="{{ current_variant.price | money | escape }}" data-compare-price="{% if current_variant.compare_at_price > current_variant.price %}{{ current_variant.compare_at_price | money | escape }}{% endif %}" data-available="{{ current_variant.available }}" data-variant-title="{{ current_variant.title | escape }}">
+        {%- endif -%}
+
+        <div class="bb-product__purchase">
+          <label class="bb-product__quantity" for="bb-quantity-{{ section.id }}">Quantity</label>
+          <input id="bb-quantity-{{ section.id }}" type="number" name="quantity" min="1" value="1" inputmode="numeric">
+          <button class="bb-product__add" type="submit" name="add" data-bb-add {% unless current_variant.available %}disabled{% endunless %}>
+            {%- if current_variant.available -%}Add to bag{%- else -%}Sold out{%- endif -%}
+          </button>
+        </div>
+        {%- if section.settings.show_dynamic_checkout -%}
+          <div class="bb-product__dynamic-checkout">{{ form | payment_button }}</div>
+        {%- endif -%}
+      {% endform %}
+
+      <div class="bb-product__description rte" id="bb-product-description">
+        {{ product.description }}
+      </div>
+
+      {%- if product.metafields.custom.highlights.value != blank -%}
+        <div class="bb-product__highlights" id="bb-product-features">
+          <h2>What makes it special</h2>
+          <ul>
+            {%- for highlight in product.metafields.custom.highlights.value -%}
+              <li>{{ highlight | escape }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+      <p class="bb-product__note">{{ section.settings.note | escape }}</p>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bag product details",
+  "tag": "section",
+  "class": "bb-product-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "THE CARRY COLLECTION"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Product background",
+      "default": "#B8567C"
+    },
+    {
+      "type": "color",
+      "id": "panel_color",
+      "label": "Image panel",
+      "default": "#D980A2"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show accelerated checkout buttons",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Small note",
+      "default": "Secure checkout powered by Shopify."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bag product details"
+    }
+  ]
+}
+{% endschema %}

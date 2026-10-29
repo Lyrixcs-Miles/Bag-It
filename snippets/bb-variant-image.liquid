@@ -1,0 +1,25 @@
+{%- liquid
+  assign image = variant.featured_image | default: product.featured_image
+  assign product_prefix = ''
+  assign color_handle = variant.title | handleize
+
+  case product.handle
+    when 'bow-tote'
+      assign product_prefix = 'bow-tote'
+    when 'foldaway-tote'
+      assign product_prefix = 'foldaway-tote'
+    when 'travel-weekender'
+      assign product_prefix = 'weekender'
+  endcase
+
+  if variant.title == 'Default Title'
+    assign color_handle = 'black'
+  endif
+
+  assign image_asset = 'bb-' | append: product_prefix | append: '-' | append: color_handle | append: '.png'
+-%}
+{%- if image != blank -%}
+  {{- image | image_url: width: 1400 -}}
+{%- elsif product_prefix != blank -%}
+  {{- image_asset | asset_url -}}
+{%- endif -%}

@@ -1,0 +1,32 @@
+{%- liquid
+  assign color = variant.metafields.custom.swatch_color.value
+  assign color_name = variant.title | downcase
+
+  if color == blank
+    case color_name
+      when 'black'
+        assign color = '#282426'
+      when 'brown'
+        assign color = '#804330'
+      when 'navy'
+        assign color = '#142C50'
+      when 'olive'
+        assign color = '#535A3E'
+      when 'khaki'
+        assign color = '#C4B787'
+      when 'rose'
+        assign color = '#B42251'
+      when 'peach'
+        assign color = '#EAA99A'
+      when 'black & tan'
+        assign color = 'linear-gradient(135deg, #202123 50%, #A24929 50%)'
+      when 'blush & tan'
+        assign color = 'linear-gradient(135deg, #E3CBC7 50%, #A24929 50%)'
+      when 'cream & tan'
+        assign color = 'linear-gradient(135deg, #E5D9C7 50%, #A24929 50%)'
+      else
+        assign color = '#B8567C'
+    endcase
+  endif
+-%}
+{{- color -}}
