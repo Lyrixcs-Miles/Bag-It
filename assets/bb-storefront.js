@@ -273,6 +273,16 @@
       zoomDialog.showModal();
     });
 
+    // Extra photos (lifestyle, details, size guide) open in the same zoom view.
+    section.querySelectorAll('[data-bb-zoom-src]').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!zoomDialog || typeof zoomDialog.showModal !== 'function' || !zoomImage) return;
+        zoomImage.src = button.dataset.bbZoomSrc;
+        zoomImage.alt = button.dataset.bbZoomAlt || '';
+        zoomDialog.showModal();
+      });
+    });
+
     section.querySelector('[data-bb-close-zoom]')?.addEventListener('click', () => zoomDialog?.close());
     zoomDialog?.addEventListener('click', (event) => {
       if (event.target === zoomDialog) zoomDialog.close();
