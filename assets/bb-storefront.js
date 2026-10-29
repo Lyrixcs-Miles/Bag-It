@@ -120,6 +120,13 @@
     const photoColor = section.querySelector('[data-bb-photo-color]');
     const addButton = section.querySelector('[data-bb-add]');
     const buyNowButton = section.querySelector('[data-bb-buy-now]');
+    const cartDialog = section.querySelector('[data-bb-cart-dialog]');
+    const cartDialogTitle = section.querySelector('[data-bb-cart-dialog-title]');
+    const cartDialogMessage = section.querySelector('[data-bb-cart-dialog-message]');
+    const cartDialogVariant = section.querySelector('[data-bb-cart-dialog-variant]');
+    const cartDialogPrice = section.querySelector('[data-bb-cart-dialog-price]');
+    const cartDialogImage = section.querySelector('[data-bb-cart-dialog-image]');
+    const cartError = section.querySelector('[data-bb-cart-error]');
     const galleryVariants = Array.from(section.querySelectorAll('[data-bb-gallery-variant]'));
     const zoomDialog = section.querySelector('[data-bb-zoom-dialog]');
     const zoomImage = section.querySelector('[data-bb-zoom-image]');
@@ -163,6 +170,90 @@
         variant.checked = true;
         variant.dispatchEvent(new Event('change', { bubbles: true }));
       });
+    });
+
+    form?.addEventListener('submit', async (event) => {
+      const submitter = event.submitter;
+      if (!(submitter instanceof HTMLButtonElement)) return;
+
+      event.preventDefault();
+      if (submitter.disabled) return;
+
+      const isBuyNow = submitter === buyNowButton;
+      const selectedVariant = form.querySelector('[data-bb-variant]:checked')
+        || form.querySelector('[data-bb-variant]');
+      const quantity = Number(new FormData(form).get('quantity')) || 1;
+      const buttons = [addButton, buyNowButton].filter((button) => button instanceof HTMLButtonElement);
+      if (cartError) {
+        cartError.hidden = true;
+        cartError.textContent = '';
+      }
+      buttons.forEach((button) => {
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+      });
+
+      try {
+        const response = await fetch(`${window.routes.cart_add_url}.js`, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.description || result.message || 'We could not add this item. Please try again.');
+        }
+
+        const currentCount = Number(section.querySelector('[data-bb-cart-count]')?.textContent) || 0;
+        document.querySelectorAll('[data-bb-cart-count]').forEach((count) => {
+          count.textContent = String(currentCount + quantity);
+        });
+
+        if (cartDialogTitle) {
+          cartDialogTitle.textContent = isBuyNow ? 'Your bag is ready' : 'Added to your bag';
+        }
+        if (cartDialogMessage) {
+          cartDialogMessage.textContent = isBuyNow
+            ? 'Continue to checkout when you are ready.'
+            : 'Your new favourite is safely in your bag.';
+        }
+        if (cartDialogVariant && selectedVariant) {
+          cartDialogVariant.textContent = selectedVariant.dataset.variantTitle || '';
+        }
+        if (cartDialogPrice && selectedVariant) {
+          cartDialogPrice.textContent = selectedVariant.dataset.price || '';
+        }
+        if (cartDialogImage && image) {
+          cartDialogImage.src = image.currentSrc || image.src;
+          cartDialogImage.alt = image.alt;
+        }
+        if (cartDialog && typeof cartDialog.showModal === 'function') {
+          cartDialog.showModal();
+          if (isBuyNow) section.querySelector('[data-bb-cart-dialog-checkout]')?.focus();
+        } else if (isBuyNow) {
+          window.location.assign(section.querySelector('[data-bb-cart-dialog-checkout]')?.href || '/checkout');
+        } else {
+          window.location.assign(window.routes.cart_url);
+        }
+      } catch (error) {
+        console.error('Unable to add product to cart:', error);
+        if (cartError) {
+          cartError.textContent = error instanceof Error ? error.message : 'We could not add this item. Please try again.';
+          cartError.hidden = false;
+        }
+      } finally {
+        buttons.forEach((button) => {
+          button.removeAttribute('aria-busy');
+          const currentVariant = form.querySelector('[data-bb-variant]:checked')
+            || form.querySelector('[data-bb-variant]');
+          button.disabled = currentVariant?.dataset.available !== 'true';
+        });
+      }
+    });
+
+    section.querySelector('[data-bb-close-cart]')?.addEventListener('click', () => cartDialog?.close());
+    cartDialog?.addEventListener('click', (event) => {
+      if (event.target === cartDialog) cartDialog.close();
     });
 
     section.querySelector('[data-bb-zoom]')?.addEventListener('click', () => {
