@@ -12,6 +12,37 @@
     render 'bb-variant-theme', product: product, variant: current_variant, mode: 'panel'
   endcapture
   assign product_headline = product.metafields.custom.headline.value
+  assign product_description = product.description
+  assign default_highlights = ''
+
+  case product.handle
+    when 'bow-tote'
+      assign fallback_headline = 'A little bow. A lot of personality.'
+      assign fallback_description = 'Your everyday carry, with a playful finishing touch. Long shoulder handles and statement side bows make this tote an easy addition to your daily rotation.'
+      assign default_highlights = 'Statement bow details at the sides|Long handles for shoulder carrying|A softly structured everyday silhouette'
+    when 'foldaway-tote'
+      assign fallback_headline = 'Big on the day. Small on the go.'
+      assign fallback_description = 'An extra bag, always within reach. This roomy shoulder tote folds into a compact matching pouch with a clip, ready to come along for errands, shopping and spontaneous plans.'
+      assign default_highlights = 'Folds into a compact matching pouch|Clip detail for keeping it close|A relaxed shoulder bag silhouette'
+    when 'travel-weekender'
+      assign fallback_headline = 'Your next getaway starts here.'
+      assign fallback_description = 'For a change of scene and everything you want to bring. A statement travel bag with carry handles, a shoulder strap and zip details, in a colour for every kind of getaway.'
+      assign default_highlights = 'Twin carry handles and a shoulder strap|Zip details with gold-tone hardware|An elongated travel bag silhouette'
+  endcase
+
+  if product_headline == blank
+    assign product_headline = fallback_headline
+  endif
+  if product_description == blank
+    assign product_description = fallback_description
+  endif
+  assign product_index = 1
+  case product.handle
+    when 'foldaway-tote'
+      assign product_index = 2
+    when 'travel-weekender'
+      assign product_index = 3
+  endcase
 -%}
 
 <section
@@ -27,15 +58,14 @@
 
   <div class="bb-product__navigation" aria-label="In this page">
     <a href="#bb-product-description">Details</a>
-    {%- if product.metafields.custom.highlights.value != blank -%}
-      <a href="#bb-product-features">What makes it special</a>
-    {%- endif -%}
+    <a href="#bb-product-colours">Choose your colour</a>
+    <a href="#bb-product-related">More bags</a>
   </div>
 
   <div class="bb-product__layout" id="bb-product-detail">
     <div class="bb-product__gallery" data-bb-gallery>
       <div class="bb-product__photo">
-        <span class="bb-product__photo-label">THE CARRY COLLECTION</span>
+        <span class="bb-product__photo-label">✧ YOUR EVERYDAY PLUS ONE.</span>
         {%- if current_image != blank -%}
           <img
             src="{{ current_image | strip | escape }}"
@@ -79,11 +109,16 @@
     </div>
 
     <div class="bb-product__details">
-      <p class="bb-product__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      <p class="bb-product__eyebrow">{{ section.settings.eyebrow | escape }} / 0{{ product_index }}</p>
       <h1>{{ product.title | escape }}</h1>
-      {%- if product_headline != blank -%}
-        <p class="bb-product__headline">{{ product_headline | escape }}</p>
-      {%- endif -%}
+      <p class="bb-product__headline">{{ product_headline | escape }}</p>
+      <div class="bb-product__description rte" id="bb-product-description">
+        {%- if product_description != blank -%}
+          {{ product_description }}
+        {%- else -%}
+          <p>Choose your colour and make this carry style yours.</p>
+        {%- endif -%}
+      </div>
       <div class="bb-product__price" role="status" aria-live="polite">
         <span data-bb-price>{{ current_variant.price | money }}</span>
         {%- if current_variant.compare_at_price > current_variant.price -%}
@@ -99,7 +134,7 @@
         {%- endif -%}
 
         {%- if product.variants.size > 1 -%}
-          <fieldset class="bb-product__variants">
+          <fieldset class="bb-product__variants" id="bb-product-colours">
             <legend>Colour <strong data-bb-selected-color>{{ current_variant.title | escape }}</strong></legend>
             <div class="bb-product__swatches">
               {%- for variant in product.variants -%}
@@ -135,7 +170,7 @@
             </div>
           </fieldset>
         {%- else -%}
-          <input type="hidden" name="id" value="{{ current_variant.id }}" data-bb-variant data-image="{{ current_image | strip | escape }}" data-price="{{ current_variant.price | money | escape }}" data-compare-price="{% if current_variant.compare_at_price > current_variant.price %}{{ current_variant.compare_at_price | money | escape }}{% endif %}" data-available="{{ current_variant.available }}" data-variant-title="{{ current_variant.title | escape }}">
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-bb-variant data-image="{{ current_image | strip | escape }}" data-price="{{ current_variant.price | money | escape }}" data-compare-price="{% if current_variant.compare_at_price > current_variant.price %}{{ current_variant.compare_at_price | money | escape }}{% endif %}" data-background="{{ current_background | strip | default: section.settings.background_color }}" data-panel="{{ current_panel | strip | default: section.settings.panel_color }}" data-available="{{ current_variant.available }}" data-variant-title="{{ current_variant.title | escape }}">
         {%- endif -%}
 
         <div class="bb-product__purchase">
@@ -150,23 +185,99 @@
         {%- endif -%}
       {% endform %}
 
-      <div class="bb-product__description rte" id="bb-product-description">
-        {{ product.description }}
-      </div>
-
-      {%- if product.metafields.custom.highlights.value != blank -%}
-        <div class="bb-product__highlights" id="bb-product-features">
-          <h2>What makes it special</h2>
-          <ul>
+      <div class="bb-product__highlights" id="bb-product-features">
+        <h2>It's all in the details</h2>
+        <ul>
+          {%- if product.metafields.custom.highlights.value != blank -%}
             {%- for highlight in product.metafields.custom.highlights.value -%}
               <li>{{ highlight | escape }}</li>
             {%- endfor -%}
-          </ul>
-        </div>
-      {%- endif -%}
+          {%- else -%}
+            {%- assign highlights = default_highlights | split: '|' -%}
+            {%- for highlight in highlights -%}
+              <li>{{ highlight | escape }}</li>
+            {%- endfor -%}
+          {%- endif -%}
+        </ul>
+      </div>
       <p class="bb-product__note">{{ section.settings.note | escape }}</p>
+      <a class="bb-product__collection-link" href="{{ routes.root_url }}">Explore the collection <span aria-hidden="true">→</span></a>
     </div>
   </div>
+
+  <div class="bb-product__ticker" aria-hidden="true">
+    <span>CARRY. STYLE. REPEAT.</span><span class="bb-product__sparkle">✧</span>
+    <span>YOUR EVERYDAY PLUS ONE.</span><span class="bb-product__sparkle">✧</span>
+    <span>CARRY. STYLE. REPEAT.</span>
+  </div>
+
+  <section class="bb-product__faq">
+    <div class="bb-product__faq-heading">
+      <p class="bb-product__eyebrow">A FEW LITTLE DETAILS</p>
+      <h2>Good to know.</h2>
+    </div>
+    <div class="bb-product__faq-list">
+      <details>
+        <summary>Which colours can I choose?</summary>
+        <p>{{ product.title | escape }} comes in {% for variant in product.variants %}{{ variant.title | escape }}{% unless forloop.last %}, {% endunless %}{% endfor %}. Choose a colour above to see its matching product photo.</p>
+      </details>
+      <details>
+        <summary>How do I know if a colour is available?</summary>
+        <p>Availability and price are shown for each colour above. Sold-out colours can still be previewed, but cannot be added to your bag until they are back in stock.</p>
+      </details>
+      <details>
+        <summary>Can I see the bag up close?</summary>
+        <p>Use the plus button on the product photo to open a larger view. The thumbnails below the photo show the product images available in the store.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="bb-product__related" id="bb-product-related">
+    <div class="bb-product__related-heading">
+      <p class="bb-product__eyebrow">MEET THE REST OF THE COLLECTION</p>
+      <h2>Find your <span>next plus one.</span></h2>
+    </div>
+    <div class="bb-product__related-grid">
+      {%- assign related_count = 0 -%}
+      {%- for related_product in collections.all.products -%}
+        {%- if related_product.id != product.id and related_count < 2 -%}
+          {%- liquid
+            assign related_variant = related_product.selected_or_first_available_variant | default: related_product.variants.first
+            assign related_headline = related_product.metafields.custom.headline.value
+            if related_headline == blank
+              assign related_headline = related_product.description | strip_html | truncatewords: 8
+            endif
+            capture related_image
+              render 'bb-variant-image', product: related_product, variant: related_variant
+            endcapture
+          -%}
+          <a class="bb-product__related-card" href="{{ related_product.url }}?variant={{ related_variant.id }}">
+            <div class="bb-product__related-image">
+              {%- if related_image != blank -%}
+                <img
+                  src="{{ related_image | strip | escape }}"
+                  alt="{{ related_variant.title | escape }} / {{ related_product.title | escape }}"
+                  width="700"
+                  height="700"
+                  loading="lazy"
+                >
+              {%- endif -%}
+              <span aria-hidden="true">↗</span>
+            </div>
+            <h3>{{ related_product.title | escape }}</h3>
+            <p>{{ related_product.variants.size }} colours{% if related_headline != blank %} / {{ related_headline | strip_html | escape }}{% endif %}</p>
+          </a>
+          {%- assign related_count = related_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </section>
+
+  <footer class="bb-product__footer">
+    <a href="{{ routes.root_url }}" class="bb-product__footer-brand">{{ shop.name | escape }}</a>
+    <span>{{ section.settings.footer_tagline | escape }}</span>
+    <a href="{{ routes.root_url }}">Back to collection <span aria-hidden="true">→</span></a>
+  </footer>
 </section>
 
 {% schema %}
@@ -204,6 +315,12 @@
       "id": "note",
       "label": "Small note",
       "default": "Secure checkout powered by Shopify."
+    },
+    {
+      "type": "text",
+      "id": "footer_tagline",
+      "label": "Footer tagline",
+      "default": "Everyday essentials. A little more personality."
     }
   ],
   "presets": [

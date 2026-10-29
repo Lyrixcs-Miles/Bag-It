@@ -9,28 +9,9 @@
         "show_dynamic_checkout": false,
         "note": "Secure checkout powered by Shopify."
       }
-    },
-    "related": {
-      "type": "related-products",
-      "settings": {
-        "heading": "Find your next plus one.",
-        "heading_size": "h2",
-        "products_to_show": 3,
-        "columns_desktop": 3,
-        "color_scheme": "scheme-2",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "columns_mobile": "2",
-        "padding_top": 44,
-        "padding_bottom": 44
-      }
     }
   },
   "order": [
-    "main",
-    "related"
+    "main"
   ]
 }

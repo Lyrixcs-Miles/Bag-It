@@ -4,6 +4,8 @@
 
 Create products in Shopify Admin with the handles `bow-tote`, `foldaway-tote`, and `travel-weekender`. Add each colour as a Shopify variant, then set its price, inventory, and availability. Add product photos, preferably assigning the matching photo to each colour variant, and place the products in the collection selected by the **Bag collection hero** section.
 
+The product page includes the full collection design: product details and swatches, feature highlights, a collection ticker, availability FAQs, two related bags, and a branded footer. Related bags are selected from Shopify's **All products** collection, excluding the current product. Add the collection's other products to Shopify's All products collection so they appear there.
+
 The homepage colour selector remains usable for sold-out variants so customers can preview their images and colours. The product page shows a sold-out label and disables adding unavailable variants to cart. To make a variant purchasable, update its inventory/availability in Shopify Admin.
 
 The custom product page hides Dawn's standard header and footer to keep the storefront design consistent. Accelerated checkout buttons are off by default; enable them in the product section settings if desired.
