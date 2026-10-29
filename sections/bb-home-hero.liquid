@@ -1,0 +1,201 @@
+{%- liquid
+  assign featured_collection = section.settings.collection
+  if featured_collection == blank
+    assign featured_collection = collections.all
+  endif
+  assign product_count = featured_collection.products.size | at_most: 3
+-%}
+
+<section
+  class="bb-home"
+  data-bb-home
+  style="--bb-bg: {{ section.settings.background_color }}; --bb-panel: {{ section.settings.panel_color }};"
+>
+  <div class="bb-home__shipping">
+    <span aria-hidden="true">&bull;</span>
+    {{ section.settings.shipping_message | escape }}
+  </div>
+
+  <div class="bb-home__scene">
+    <div class="bb-home__grain" aria-hidden="true"></div>
+    <div class="bb-home__ghost" aria-hidden="true">{{ section.settings.backdrop_text | escape }}</div>
+
+    <header class="bb-home__header">
+      <a class="bb-home__brand" href="{{ routes.root_url }}">{{ shop.name | escape }}</a>
+      <a class="bb-home__cart" href="{{ routes.cart_url }}" aria-label="{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})">
+        <span>{{ 'templates.cart.cart' | t }}</span>
+        <span class="bb-home__cart-count" aria-live="polite">{{ cart.item_count }}</span>
+      </a>
+    </header>
+
+    {%- if featured_collection == blank or product_count == 0 -%}
+      <div class="bb-home__empty">
+        <p class="bb-home__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <h1>{{ section.settings.heading | escape }}</h1>
+        <p>Choose a collection with products in this section's settings to start showcasing your bags.</p>
+      </div>
+    {%- else -%}
+      <nav class="bb-home__collection" aria-label="Bag styles">
+        {%- for product in featured_collection.products limit: 3 -%}
+          <button
+            type="button"
+            data-bb-go-to="{{ forloop.index0 }}"
+            aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+          >
+            <span>0{{ forloop.index }}</span>{{ product.title | escape }}
+          </button>
+        {%- endfor -%}
+      </nav>
+
+      <div class="bb-home__carousel" data-bb-carousel aria-label="{{ section.settings.heading | escape }}">
+        {%- for product in featured_collection.products limit: 3 -%}
+          {%- liquid
+            assign selected_variant = product.selected_or_first_available_variant | default: product.variants.first
+            assign image_alt = selected_variant.featured_image.alt | default: product.featured_image.alt | default: product.title
+            assign headline = product.metafields.custom.headline.value
+            if headline == blank
+              assign headline = product.description | strip_html | truncatewords: 12
+            endif
+            capture selected_image
+              render 'bb-variant-image', product: product, variant: selected_variant
+            endcapture
+          -%}
+          <a
+            class="bb-home__slide"
+            data-bb-slide
+            data-index="{{ forloop.index0 }}"
+            data-title="{{ product.title | escape }}"
+            data-headline="{{ headline | strip_html | escape }}"
+            href="{{ product.url }}?variant={{ selected_variant.id }}"
+            aria-label="{{ section.settings.discover_label | escape }}: {{ product.title | escape }}"
+          >
+            <img
+              src="{{ selected_image | strip | escape }}"
+              alt="{{ image_alt | escape }}"
+              width="1000"
+              height="1000"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              data-bb-product-image
+            >
+            <span class="bb-home__slide-title">{{ product.title | escape }}</span>
+          </a>
+        {%- endfor -%}
+      </div>
+
+      <div class="bb-home__intro">
+        <p class="bb-home__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <h1>{{ section.settings.heading | escape }}</h1>
+        <p class="bb-home__headline" data-bb-headline></p>
+        <p class="bb-home__description">
+          <span data-bb-color-count></span> colours. Your kind of carry.
+        </p>
+        <div class="bb-home__arrows">
+          <button type="button" data-bb-prev aria-label="Previous bag">
+            <span aria-hidden="true">←</span>
+          </button>
+          <button type="button" data-bb-next aria-label="Next bag">
+            <span aria-hidden="true">→</span>
+          </button>
+          <span class="bb-home__counter" data-bb-counter aria-live="polite"></span>
+        </div>
+      </div>
+
+      <fieldset class="bb-home__swatches" data-bb-swatches>
+        <legend>Colour <strong data-bb-selected-color></strong></legend>
+        {%- for product in featured_collection.products limit: 3 -%}
+          {%- assign selected_variant = product.selected_or_first_available_variant | default: product.variants.first -%}
+          <div class="bb-home__swatch-list" data-bb-swatch-list data-index="{{ forloop.index0 }}">
+            {%- for variant in product.variants -%}
+              {%- capture variant_image -%}{%- render 'bb-variant-image', product: product, variant: variant -%}{%- endcapture -%}
+              {%- capture swatch_color -%}{%- render 'bb-swatch-color', variant: variant -%}{%- endcapture -%}
+              {%- capture variant_background -%}{%- render 'bb-variant-theme', product: product, variant: variant, mode: 'background' -%}{%- endcapture -%}
+              {%- capture variant_panel -%}{%- render 'bb-variant-theme', product: product, variant: variant, mode: 'panel' -%}{%- endcapture -%}
+              <button
+                type="button"
+                data-bb-swatch
+                data-variant-id="{{ variant.id }}"
+                data-variant-title="{{ variant.title | escape }}"
+                data-image="{{ variant_image | strip | escape }}"
+                data-url="{{ product.url }}?variant={{ variant.id }}"
+                data-background="{{ variant_background | strip | default: section.settings.background_color }}"
+                data-panel="{{ variant_panel | strip | default: section.settings.panel_color }}"
+                style="--bb-swatch: {{ swatch_color | strip }};"
+                aria-label="{{ variant.title | escape }}"
+                aria-pressed="{% if variant.id == selected_variant.id %}true{% else %}false{% endif %}"
+                {% unless variant.available %}disabled{% endunless %}
+              >
+                <span aria-hidden="true"></span>
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endfor -%}
+      </fieldset>
+
+      <a class="bb-home__discover" data-bb-discover href="{{ featured_collection.products.first.url }}">
+        {{ section.settings.discover_label | escape }} <span aria-hidden="true">→</span>
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bag collection hero",
+  "tag": "section",
+  "class": "bb-home-section",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Bag collection"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "THE CARRY COLLECTION"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find your everyday plus one."
+    },
+    {
+      "type": "text",
+      "id": "backdrop_text",
+      "label": "Large background text",
+      "default": "CARRY IN STYLE"
+    },
+    {
+      "type": "text",
+      "id": "shipping_message",
+      "label": "Shipping message",
+      "default": "Free international shipping"
+    },
+    {
+      "type": "text",
+      "id": "discover_label",
+      "label": "Product link label",
+      "default": "DISCOVER IT"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#B8567C"
+    },
+    {
+      "type": "color",
+      "id": "panel_color",
+      "label": "Accent",
+      "default": "#D980A2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bag collection hero"
+    }
+  ]
+}
+{% endschema %}

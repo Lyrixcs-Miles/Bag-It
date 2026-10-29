@@ -1,0 +1,61 @@
+{%- liquid
+  assign variant_handle = variant.title | handleize
+  assign background = ''
+  assign panel = ''
+
+  case product.handle
+    when 'bow-tote'
+      case variant_handle
+        when 'black'
+          assign background = '#41464F'
+          assign panel = '#B8BDC8'
+        when 'brown'
+          assign background = '#84523E'
+          assign panel = '#D6A68B'
+      endcase
+    when 'foldaway-tote'
+      case variant_handle
+        when 'black'
+          assign background = '#37474D'
+          assign panel = '#B1C0C5'
+        when 'navy'
+          assign background = '#304D75'
+          assign panel = '#A0B8D8'
+        when 'olive'
+          assign background = '#566345'
+          assign panel = '#BDC59F'
+        when 'khaki'
+          assign background = '#6F6347'
+          assign panel = '#D8CCA7'
+        when 'brown'
+          assign background = '#684B3D'
+          assign panel = '#C7A18A'
+      endcase
+    when 'travel-weekender'
+      case variant_handle
+        when 'black'
+          assign background = '#44434D'
+          assign panel = '#B8B7C1'
+        when 'black-tan'
+          assign background = '#665044'
+          assign panel = '#D6AE8A'
+        when 'blush-tan'
+          assign background = '#81525A'
+          assign panel = '#E6BCC4'
+        when 'rose'
+          assign background = '#A33661'
+          assign panel = '#EAA0BC'
+        when 'peach'
+          assign background = '#8B4F44'
+          assign panel = '#F0BDB0'
+        when 'cream-tan'
+          assign background = '#706044'
+          assign panel = '#E8D6B6'
+      endcase
+  endcase
+-%}
+{%- if mode == 'panel' -%}
+  {{- panel -}}
+{%- else -%}
+  {{- background -}}
+{%- endif -%}
