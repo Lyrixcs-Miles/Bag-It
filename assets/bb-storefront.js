@@ -7,6 +7,7 @@
 
     const navigation = Array.from(section.querySelectorAll('[data-bb-go-to]'));
     const swatchLists = Array.from(section.querySelectorAll('[data-bb-swatch-list]'));
+    const activeTitle = section.querySelector('[data-bb-active-title]');
     const headline = section.querySelector('[data-bb-headline]');
     const colorCount = section.querySelector('[data-bb-color-count]');
     const selectedColor = section.querySelector('[data-bb-selected-color]');
@@ -74,6 +75,7 @@
       const selectedSwatch = activeSwatches?.querySelector('[aria-pressed="true"]')
         || activeSwatches?.querySelector('[data-bb-swatch]');
       if (selectedSwatch) updateVariant(activeSlide, selectedSwatch);
+      if (activeTitle) activeTitle.textContent = activeSlide.dataset.title || '';
       if (headline) headline.textContent = activeSlide.dataset.headline || '';
       if (colorCount) {
         const count = activeSwatches?.querySelectorAll('[data-bb-swatch]').length || 0;
