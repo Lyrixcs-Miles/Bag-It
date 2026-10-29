@@ -117,14 +117,16 @@
                 data-variant-title="{{ variant.title | escape }}"
                 data-image="{{ variant_image | strip | escape }}"
                 data-url="{{ product.url }}?variant={{ variant.id }}"
+                data-available="{{ variant.available }}"
                 data-background="{{ variant_background | strip | default: section.settings.background_color }}"
                 data-panel="{{ variant_panel | strip | default: section.settings.panel_color }}"
                 style="--bb-swatch: {{ swatch_color | strip }};"
-                aria-label="{{ variant.title | escape }}"
+                aria-label="{{ variant.title | escape }}{% unless variant.available %} (Sold out){% endunless %}"
                 aria-pressed="{% if variant.id == selected_variant.id %}true{% else %}false{% endif %}"
-                {% unless variant.available %}disabled{% endunless %}
+                {% unless variant.available %}class="is-sold-out"{% endunless %}
               >
                 <span aria-hidden="true"></span>
+                <small class="bb-home__swatch-status">{% unless variant.available %}Sold out{% else %}{{ variant.title | escape }}{% endunless %}</small>
               </button>
             {%- endfor -%}
           </div>

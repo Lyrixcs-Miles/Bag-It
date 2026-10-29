@@ -1,4 +1,16 @@
-# Dawn
+# Bag-It Shopify theme (built on Dawn)
+
+## Store setup
+
+Create products in Shopify Admin with the handles `bow-tote`, `foldaway-tote`, and `travel-weekender`. Add each colour as a Shopify variant, then set its price, inventory, and availability. Add product photos, preferably assigning the matching photo to each colour variant, and place the products in the collection selected by the **Bag collection hero** section.
+
+The homepage colour selector remains usable for sold-out variants so customers can preview their images and colours. The product page shows a sold-out label and disables adding unavailable variants to cart. To make a variant purchasable, update its inventory/availability in Shopify Admin.
+
+The custom product page hides Dawn's standard header and footer to keep the storefront design consistent. Accelerated checkout buttons are off by default; enable them in the product section settings if desired.
+
+Shopify handles the cart and checkout. Configure inventory, shipping, taxes, and payment providers in Shopify Admin. Dawn's license is retained in [`LICENSE.md`](LICENSE.md).
+
+---
 
 [![Build status](https://github.com/shopify/dawn/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Shopify/dawn/actions/workflows/ci.yml?query=branch%3Amain)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?color=informational)](/.github/CONTRIBUTING.md)

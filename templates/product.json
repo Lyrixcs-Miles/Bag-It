@@ -6,7 +6,7 @@
         "eyebrow": "THE CARRY COLLECTION",
         "background_color": "#B8567C",
         "panel_color": "#D980A2",
-        "show_dynamic_checkout": true,
+        "show_dynamic_checkout": false,
         "note": "Secure checkout powered by Shopify."
       }
     },

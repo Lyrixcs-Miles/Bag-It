@@ -121,7 +121,6 @@
                   data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}"
                   data-available="{{ variant.available }}"
                   {% if variant.id == current_variant.id %}checked{% endif %}
-                  {% unless variant.available %}disabled{% endunless %}
                 >
                 <label
                   for="bb-variant-{{ section.id }}-{{ variant.id }}"
@@ -198,7 +197,7 @@
       "type": "checkbox",
       "id": "show_dynamic_checkout",
       "label": "Show accelerated checkout buttons",
-      "default": true
+      "default": false
     },
     {
       "type": "text",
