@@ -1,5 +1,12 @@
 {
   "sections": {
+    "cart-header": {
+      "type": "bb-cart-header",
+      "settings": {
+        "brand_name": "Blush&Bloom",
+        "shipping_message": "FREE INTERNATIONAL SHIPPING"
+      }
+    },
     "cart-items": {
       "type": "main-cart-items",
       "settings": {
@@ -31,10 +38,19 @@
         "subtotal",
         "buttons"
       ]
+    },
+    "custom-footer": {
+      "type": "bb-cart-footer",
+      "settings": {
+        "brand_name": "Blush&Bloom",
+        "newsletter_heading": "A little note from us."
+      }
     }
   },
   "order": [
+    "cart-header",
     "cart-items",
-    "cart-footer"
+    "cart-footer",
+    "custom-footer"
   ]
 }
