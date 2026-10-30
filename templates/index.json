@@ -1,16 +1,26 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "bb-home-hero",
       "settings": {
         "collection": "all",
+        "brand_name": "BAG-IT",
         "eyebrow": "THE CARRY COLLECTION",
         "heading": "Find your everyday plus one.",
         "backdrop_text": "CARRY IN STYLE",
-        "shipping_message": "Free international shipping",
+        "shipping_message": "FREE SHIPPING NATIONWIDE",
         "discover_label": "DISCOVER IT",
-        "background_color": "#B8567C",
-        "panel_color": "#D980A2"
+        "background_color": "#b8567c",
+        "panel_color": "#d980a2"
       }
     }
   },
