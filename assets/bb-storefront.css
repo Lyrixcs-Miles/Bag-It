@@ -2639,11 +2639,32 @@ body.template-cart .cart-item__quantity-wrapper {
   gap: 8px;
 }
 
+/* Dawn draws the quantity border with a dark square ring; soften and round it. */
 body.template-cart .cart-item__quantity .quantity {
   min-height: 44px;
-  border-color: #d8c8d0;
   border-radius: 8px;
   background: #fff;
+}
+
+body.template-cart .cart-item__quantity .quantity::after,
+body.template-cart .cart-item__quantity .quantity:hover::after {
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #d8c8d0;
+}
+
+body.template-cart .cart-item__quantity .quantity::before {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+body.template-cart .cart-item__quantity .quantity:focus-within::after {
+  box-shadow: 0 0 0 2px #b8567c;
+}
+
+/* Dawn leaves an empty padded band and a second divider under the items. */
+body.template-cart .cart__items {
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
 body.template-cart .cart-item__quantity .quantity__button,
@@ -2711,6 +2732,8 @@ body.template-cart #main-cart-footer .tax-note {
 }
 
 body.template-cart #main-cart-footer .cart__checkout-button {
+  width: 100%;
+  max-width: none;
   min-height: 52px;
   border: 1px solid #b8567c;
   border-radius: 8px;
@@ -2727,8 +2750,23 @@ body.template-cart #main-cart-footer .cart__checkout-button:hover {
   background: #9c4268;
 }
 
+/* Remove Dawn's dark offset ring so the button matches the store style. */
+body.template-cart #main-cart-footer .cart__checkout-button::before,
+body.template-cart #main-cart-footer .cart__checkout-button::after,
+body.template-cart #main-cart-footer .cart__checkout-button:hover::after {
+  box-shadow: none;
+}
+
+body.template-cart #main-cart-footer .cart__checkout-button:focus-visible {
+  outline: 2px solid #b8567c;
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+/* Line PayPal and other express buttons up with the checkout button. */
 body.template-cart #main-cart-footer .cart__dynamic-checkout-buttons {
-  margin-top: 10px;
+  max-width: none;
+  margin: 10px 0 0;
 }
 
 @media (max-width: 749px) {
