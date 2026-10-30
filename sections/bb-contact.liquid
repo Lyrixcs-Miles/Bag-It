@@ -1,0 +1,193 @@
+{%- liquid
+  # Only shown when set, so the store owner's private email is never published by default.
+  assign contact_email = section.settings.email
+-%}
+
+<section class="bb-contact" aria-labelledby="bb-contact-title-{{ section.id }}">
+  <div class="bb-contact__inner">
+    <div class="bb-contact__intro">
+      <p class="bb-contact__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      <h1 id="bb-contact-title-{{ section.id }}" class="bb-contact__title">{{ section.settings.heading | escape }}</h1>
+      <p class="bb-contact__lead">{{ section.settings.intro | escape }}</p>
+
+      {%- if page.content != blank -%}
+        <div class="bb-contact__page-content rte">{{ page.content }}</div>
+      {%- endif -%}
+
+      <ul class="bb-contact__cards" role="list">
+        {%- if contact_email != blank -%}
+          <li class="bb-contact__card">
+            <span class="bb-contact__card-label">Email us</span>
+            <a href="mailto:{{ contact_email | escape }}">{{ contact_email | escape }}</a>
+          </li>
+        {%- endif -%}
+        <li class="bb-contact__card">
+          <span class="bb-contact__card-label">Reply time</span>
+          <span>{{ section.settings.response_time | escape }}</span>
+        </li>
+        <li class="bb-contact__card">
+          <span class="bb-contact__card-label">Shipping</span>
+          <span>{{ section.settings.shipping_note | escape }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="bb-contact__form-card">
+      {%- form 'contact', id: 'BbContactForm', class: 'bb-contact__form' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="bb-contact__status bb-contact__status--success" role="status" tabindex="-1" autofocus>
+            <strong>Thank you!</strong>
+            <span>{{ section.settings.success_message | escape }}</span>
+          </div>
+        {%- elsif form.errors -%}
+          <div class="bb-contact__status bb-contact__status--error" role="alert" tabindex="-1" autofocus>
+            <strong>Please check the form.</strong>
+            <ul>
+              {%- for field in form.errors -%}
+                <li>
+                  {%- if field == 'form' -%}
+                    {{ form.errors.messages[field] }}
+                  {%- else -%}
+                    {{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        <h2 class="bb-contact__form-title">Send us a message</h2>
+
+        <div class="bb-contact__row">
+          <div class="bb-contact__field">
+            <label for="BbContactForm-name">Name</label>
+            <input
+              id="BbContactForm-name"
+              type="text"
+              name="contact[{{ 'templates.contact.form.name' | t }}]"
+              value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+              autocomplete="name"
+            >
+          </div>
+          <div class="bb-contact__field">
+            <label for="BbContactForm-email">Email <span aria-hidden="true">*</span></label>
+            <input
+              id="BbContactForm-email"
+              type="email"
+              name="contact[email]"
+              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+              autocomplete="email"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+              {% if form.errors contains 'email' %}
+                aria-invalid="true"
+                aria-describedby="BbContactForm-email-error"
+              {% endif %}
+            >
+            {%- if form.errors contains 'email' -%}
+              <small id="BbContactForm-email-error" class="bb-contact__field-error">
+                {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}
+              </small>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="bb-contact__row">
+          <div class="bb-contact__field">
+            <label for="BbContactForm-phone">Phone <span class="bb-contact__optional">(optional)</span></label>
+            <input
+              id="BbContactForm-phone"
+              type="tel"
+              name="contact[{{ 'templates.contact.form.phone' | t }}]"
+              value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+              autocomplete="tel"
+              pattern="[0-9\-\+\s\(\)]*"
+            >
+          </div>
+          <div class="bb-contact__field">
+            <label for="BbContactForm-order">Order number <span class="bb-contact__optional">(optional)</span></label>
+            <input
+              id="BbContactForm-order"
+              type="text"
+              name="contact[Order number]"
+              placeholder="e.g. #1001"
+            >
+          </div>
+        </div>
+
+        <div class="bb-contact__field">
+          <label for="BbContactForm-body">Message <span aria-hidden="true">*</span></label>
+          <textarea
+            id="BbContactForm-body"
+            name="contact[{{ 'templates.contact.form.comment' | t }}]"
+            rows="6"
+            required
+          >{{- form.body -}}</textarea>
+        </div>
+
+        <button type="submit" class="bb-contact__submit">
+          <span>Send message</span>
+          <span aria-hidden="true">→</span>
+        </button>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bag contact page",
+  "tag": "div",
+  "class": "bb-contact-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "WE'RE HERE TO HELP"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Get in touch."
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro",
+      "default": "Questions about a bag, a colour or your order? Send us a message and we'll get back to you."
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Contact email",
+      "info": "Shown on the page. Leave blank to hide it; messages from the form still reach the store's email."
+    },
+    {
+      "type": "text",
+      "id": "response_time",
+      "label": "Reply time",
+      "default": "Within 1–2 business days"
+    },
+    {
+      "type": "text",
+      "id": "shipping_note",
+      "label": "Shipping note",
+      "default": "Free international shipping on every order"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Your message is on its way. We'll reply as soon as we can."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bag contact page"
+    }
+  ]
+}
+{% endschema %}

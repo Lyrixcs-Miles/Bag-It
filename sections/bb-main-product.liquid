@@ -306,7 +306,7 @@
       </div>
     </div>
     <p class="bb-product__cart-dialog-message" data-bb-cart-dialog-message>Your bag is ready whenever you are.</p>
-    <a class="bb-product__cart-dialog-checkout" href="{{ routes.root_url }}checkout" data-bb-cart-dialog-checkout>Continue to checkout <span aria-hidden="true">→</span></a>
+    <a class="bb-product__cart-dialog-checkout" href="/checkout" data-bb-cart-dialog-checkout>Continue to checkout <span aria-hidden="true">→</span></a>
     <a class="bb-product__cart-dialog-view" href="{{ routes.cart_url }}">View your bag</a>
   </dialog>
 
@@ -390,7 +390,7 @@
       </details>
       <details>
         <summary>Can I see the bag up close?</summary>
-        <p>Use the plus button on the product photo to open a larger view. The thumbnails below the photo show the product images available in the store.</p>
+        <p>Tap the magnifier on the product photo, or any photo further down the page, to open a larger view. Pick a colour to see that bag in its matching shade.</p>
       </details>
     </div>
   </section>
@@ -409,6 +409,16 @@
             assign related_headline = related_product.metafields.custom.headline.value
             if related_headline == blank
               assign related_headline = related_product.description | strip_html | truncatewords: 8
+            endif
+            if related_headline == blank
+              case related_product.handle
+                when 'bow-tote'
+                  assign related_headline = 'A little bow. A lot of personality.'
+                when 'foldaway-tote'
+                  assign related_headline = 'Big on the day. Small on the go.'
+                when 'travel-weekender'
+                  assign related_headline = 'Your next getaway starts here.'
+              endcase
             endif
             capture related_image
               render 'bb-variant-image', product: related_product, variant: related_variant

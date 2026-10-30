@@ -21,7 +21,7 @@
     <div class="bb-home__ghost" aria-hidden="true">{{ section.settings.backdrop_text | escape }}</div>
 
     <header class="bb-home__header">
-      <a class="bb-home__brand" href="{{ routes.root_url }}">{{ shop.name | escape }}</a>
+      <a class="bb-home__brand" href="{{ routes.root_url }}">{{ section.settings.brand_name | default: shop.name | escape }}</a>
       <a class="bb-home__cart" href="{{ routes.cart_url }}" aria-label="{{ 'templates.cart.cart' | t }} ({{ cart.item_count }})">
         {{ 'icon-cart.svg' | inline_asset_content }}
         <span class="bb-home__cart-label">Bag</span>
@@ -163,6 +163,12 @@
       "type": "collection",
       "id": "collection",
       "label": "Bag collection"
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand name",
+      "default": "BAG-IT"
     },
     {
       "type": "text",

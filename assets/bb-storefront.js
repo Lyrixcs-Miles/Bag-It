@@ -212,19 +212,26 @@
           throw new Error(result.description || result.message || 'We could not add this item. Please try again.');
         }
 
-        const currentCount = Number(section.querySelector('[data-bb-cart-count]')?.textContent) || 0;
+        // Buy now skips the popup and goes straight to checkout.
+        if (isBuyNow) {
+          window.location.assign(section.querySelector('[data-bb-cart-dialog-checkout]')?.href || '/checkout');
+          return;
+        }
+
+        // Read the real bag count from Shopify rather than guessing it.
+        let cartCount = (Number(section.querySelector('[data-bb-cart-count]')?.textContent) || 0) + quantity;
+        try {
+          const cartResponse = await fetch(`${window.routes.cart_url}.js`, { headers: { Accept: 'application/json' } });
+          if (cartResponse.ok) cartCount = (await cartResponse.json()).item_count;
+        } catch (countError) {
+          // Keep the estimated count if the cart cannot be read.
+        }
         document.querySelectorAll('[data-bb-cart-count]').forEach((count) => {
-          count.textContent = String(currentCount + quantity);
+          count.textContent = String(cartCount);
         });
 
-        if (cartDialogTitle) {
-          cartDialogTitle.textContent = isBuyNow ? 'Your bag is ready' : 'Added to your bag';
-        }
-        if (cartDialogMessage) {
-          cartDialogMessage.textContent = isBuyNow
-            ? 'Continue to checkout when you are ready.'
-            : 'Your new favourite is safely in your bag.';
-        }
+        if (cartDialogTitle) cartDialogTitle.textContent = 'Added to your bag';
+        if (cartDialogMessage) cartDialogMessage.textContent = 'Your new favourite is safely in your bag.';
         if (cartDialogVariant && selectedVariant) {
           cartDialogVariant.textContent = selectedVariant.dataset.variantTitle || '';
         }
@@ -237,9 +244,6 @@
         }
         if (cartDialog && typeof cartDialog.showModal === 'function') {
           cartDialog.showModal();
-          if (isBuyNow) section.querySelector('[data-bb-cart-dialog-checkout]')?.focus();
-        } else if (isBuyNow) {
-          window.location.assign(section.querySelector('[data-bb-cart-dialog-checkout]')?.href || '/checkout');
         } else {
           window.location.assign(window.routes.cart_url);
         }
