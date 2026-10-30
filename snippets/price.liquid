@@ -40,6 +40,9 @@
   endif
 -%}
 
+{%- if target != blank and price == 0 -%}
+  <div class="price {{ price_class }}"><span class="price-item price-item--regular">Price coming soon</span></div>
+{%- else -%}
 {%- unless target == null and placeholder == null -%}
   <div
     class="
@@ -123,3 +126,4 @@
     {%- endif -%}
   </div>
 {% endunless %}
+{%- endif -%}

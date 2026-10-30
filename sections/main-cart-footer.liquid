@@ -3,6 +3,16 @@
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
 
+{%- liquid
+  assign has_unpriced_items = false
+  for item in cart.items
+    if item.variant.price == 0
+      assign has_unpriced_items = true
+      break
+    endif
+  endfor
+-%}
+
 {%- style -%}
   .section-{{ section.id }}-padding {
     padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
@@ -60,7 +70,7 @@
 
                 <div class="totals">
                   <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>
-                  <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
+                  <p class="totals__total-value">{% if has_unpriced_items %}Pricing coming soon{% else %}{{ cart.total_price | money_with_currency }}{% endif %}</p>
                 </div>
 
                 <small class="tax-note caption-large rte">
@@ -110,16 +120,16 @@
                   id="checkout"
                   class="cart__checkout-button button"
                   name="checkout"
-                  {% if cart == empty %}
+                  {% if cart == empty or has_unpriced_items %}
                     disabled
                   {% endif %}
                   form="cart"
                 >
-                  {{ 'sections.cart.checkout' | t }}
+                  {% if has_unpriced_items %}Prices coming soon{% else %}{{ 'sections.cart.checkout' | t }}{% endif %}
                 </button>
               </div>
 
-              {%- if additional_checkout_buttons -%}
+              {%- if additional_checkout_buttons and has_unpriced_items == false -%}
                 <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
                   {{ content_for_additional_checkout_buttons }}
                 </div>

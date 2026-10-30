@@ -120,7 +120,9 @@
                         -%}
                       </div>
 
-                      {%- if item.original_price != item.final_price -%}
+                      {%- if item.variant.price == 0 -%}
+                        <div class="product-option">Price coming soon</div>
+                      {%- elsif item.original_price != item.final_price -%}
                         <div class="cart-item__discounted-prices">
                           <span class="visually-hidden">
                             {{ 'products.product.price.regular_price' | t }}
@@ -190,7 +192,9 @@
                     <td class="cart-item__totals right medium-hide large-up-hide">
                       {%- render 'loading-spinner' -%}
                       <div class="cart-item__price-wrapper">
-                        {%- if item.original_line_price != item.final_line_price -%}
+                        {%- if item.variant.price == 0 -%}
+                          <span class="price price--end">Price coming soon</span>
+                        {%- elsif item.original_line_price != item.final_line_price -%}
                           <dl class="cart-item__discounted-prices">
                             <dt class="visually-hidden">
                               {{ 'products.product.price.regular_price' | t }}
@@ -418,7 +422,9 @@
                     <td class="cart-item__totals right small-hide">
                       {%- render 'loading-spinner' -%}
                       <div class="cart-item__price-wrapper">
-                        {%- if item.original_line_price != item.final_line_price -%}
+                        {%- if item.variant.price == 0 -%}
+                          <span class="price price--end">Price coming soon</span>
+                        {%- elsif item.original_line_price != item.final_line_price -%}
                           <dl class="cart-item__discounted-prices">
                             <dt class="visually-hidden">
                               {{ 'products.product.price.regular_price' | t }}

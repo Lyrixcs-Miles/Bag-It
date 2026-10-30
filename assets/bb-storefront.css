@@ -3252,6 +3252,12 @@ body:has(.bb-contact) #MainContent {
   }
 }
 
+/* Keep native hidden states effective on custom flex/grid components. */
+.bb-home [hidden],
+.bb-product [hidden] {
+  display: none !important;
+}
+
 /* =========================================================
    Reduced motion
    ========================================================= */
