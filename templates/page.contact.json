@@ -1,25 +1,26 @@
 {
   "sections": {
-    "main": {
-      "type": "main-page",
+    "header": {
+      "type": "bb-cart-header",
       "settings": {
-        "padding_top": 36,
-        "padding_bottom": 36
+        "brand_name": "BAG-IT",
+        "shipping_message": "FREE INTERNATIONAL SHIPPING"
       }
     },
-    "form": {
-      "type": "contact-form",
+    "contact": {
+      "type": "bb-contact",
+      "settings": {}
+    },
+    "footer": {
+      "type": "bb-cart-footer",
       "settings": {
-        "heading": "",
-        "heading_size": "h1",
-        "color_scheme": "scheme-1",
-        "padding_top": 36,
-        "padding_bottom": 36
+        "brand_name": "BAG-IT"
       }
     }
   },
   "order": [
-    "main",
-    "form"
+    "header",
+    "contact",
+    "footer"
   ]
 }
