@@ -16,7 +16,7 @@
   <nav class="bb-cart-header__nav" aria-label="Main navigation">
     <a href="{{ routes.all_products_collection_url }}">Shop all</a>
     <a href="{{ routes.root_url }}">Home</a>
-    <a href="{{ routes.root_url }}#contact">Contact</a>
+    <a href="{{ pages.contact.url | default: '/pages/contact' }}">Contact</a>
   </nav>
 </header>
 
