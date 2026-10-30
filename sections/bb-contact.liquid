@@ -64,7 +64,7 @@
             <input
               id="BbContactForm-name"
               type="text"
-              name="contact[{{ 'templates.contact.form.name' | t }}]"
+              name="contact[name]"
               value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
               autocomplete="name"
             >
@@ -99,7 +99,7 @@
             <input
               id="BbContactForm-phone"
               type="tel"
-              name="contact[{{ 'templates.contact.form.phone' | t }}]"
+              name="contact[phone]"
               value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
               autocomplete="tel"
               pattern="[0-9\-\+\s\(\)]*"
@@ -120,7 +120,7 @@
           <label for="BbContactForm-body">Message <span aria-hidden="true">*</span></label>
           <textarea
             id="BbContactForm-body"
-            name="contact[{{ 'templates.contact.form.comment' | t }}]"
+            name="contact[body]"
             rows="6"
             required
           >{{- form.body -}}</textarea>

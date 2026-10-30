@@ -1,0 +1,9 @@
+{% doc %}
+  Displays a confirmed variant price or a prelaunch placeholder.
+  @param {object} variant - The product variant to price.
+{% enddoc %}
+{%- if variant.price > 0 -%}
+  {{- variant.price | money -}}
+{%- else -%}
+  Price coming soon
+{%- endif -%}
