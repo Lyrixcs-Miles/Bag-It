@@ -30,7 +30,11 @@
       slide.dataset.variantId = swatch.dataset.variantId;
       if (slide.dataset.index === String(activeIndex)) {
         if (buyVariant) buyVariant.value = swatch.dataset.variantId;
-        if (buyButton) buyButton.disabled = swatch.dataset.available !== 'true';
+        if (buyButton) {
+          buyButton.disabled = swatch.dataset.available !== 'true' || swatch.dataset.priceReady === 'false';
+          const label = buyButton.querySelector('[data-bb-home-buy-label]');
+          if (label) label.textContent = swatch.dataset.priceReady === 'false' ? 'Coming soon' : 'Buy now';
+        }
       }
       slide.setAttribute('aria-label', `Discover ${slide.dataset.title} in ${swatch.dataset.variantTitle}`);
       swatch.closest('[data-bb-swatch-list]').querySelectorAll('[data-bb-swatch]').forEach((button) => {
@@ -161,7 +165,13 @@
         addButton.disabled = variant.dataset.available !== 'true';
         addButton.textContent = variant.dataset.available === 'true' ? 'Add to bag' : 'Sold out';
       }
-      if (buyNowButton) buyNowButton.disabled = variant.dataset.available !== 'true';
+      if (buyNowButton) {
+        buyNowButton.disabled = variant.dataset.available !== 'true' || variant.dataset.priceReady === 'false';
+        const label = buyNowButton.querySelector('[data-bb-buy-now-label]');
+        if (label) label.textContent = variant.dataset.priceReady === 'false' ? 'Coming soon' : 'Buy now';
+      }
+      const checkoutLink = section.querySelector('[data-bb-cart-dialog-checkout]');
+      if (checkoutLink) checkoutLink.hidden = variant.dataset.priceReady === 'false';
       const url = new URL(window.location.href);
       url.searchParams.set('variant', variant.value);
       window.history.replaceState({}, '', url);
@@ -190,6 +200,7 @@
       const isBuyNow = submitter === buyNowButton;
       const selectedVariant = form.querySelector('[data-bb-variant]:checked')
         || form.querySelector('[data-bb-variant]');
+      if (isBuyNow && selectedVariant?.dataset.priceReady === 'false') return;
       const quantity = Number(new FormData(form).get('quantity')) || 1;
       const buttons = [addButton, buyNowButton].filter((button) => button instanceof HTMLButtonElement);
       if (cartError) {
@@ -212,20 +223,27 @@
           throw new Error(result.description || result.message || 'We could not add this item. Please try again.');
         }
 
-        // Buy now skips the popup and goes straight to checkout.
+        // Reconcile the count and pricing against the current Shopify cart.
+        let cart = null;
+        try {
+          const cartResponse = await fetch(`${window.routes.cart_url}.js`, { headers: { Accept: 'application/json' } });
+          if (cartResponse.ok) cart = await cartResponse.json();
+        } catch (countError) {
+          // An unreadable cart can still be reviewed on Shopify's cart page.
+        }
+
+        // Buy now skips the popup; unpriced items must be reviewed in the cart.
         if (isBuyNow) {
-          window.location.assign(section.querySelector('[data-bb-cart-dialog-checkout]')?.href || '/checkout');
+          const pricesReady = cart && Array.isArray(cart.items) && cart.items.length > 0
+            && cart.items.every((item) => Number(item.original_price) > 0);
+          window.location.assign(pricesReady
+            ? section.querySelector('[data-bb-cart-dialog-checkout]')?.href || `${window.Shopify.routes.root}checkout`
+            : window.routes.cart_url);
           return;
         }
 
-        // Read the real bag count from Shopify rather than guessing it.
-        let cartCount = (Number(section.querySelector('[data-bb-cart-count]')?.textContent) || 0) + quantity;
-        try {
-          const cartResponse = await fetch(`${window.routes.cart_url}.js`, { headers: { Accept: 'application/json' } });
-          if (cartResponse.ok) cartCount = (await cartResponse.json()).item_count;
-        } catch (countError) {
-          // Keep the estimated count if the cart cannot be read.
-        }
+        const cartCount = cart?.item_count
+          ?? (Number(section.querySelector('[data-bb-cart-count]')?.textContent) || 0) + quantity;
         document.querySelectorAll('[data-bb-cart-count]').forEach((count) => {
           count.textContent = String(cartCount);
         });
@@ -258,7 +276,8 @@
           button.removeAttribute('aria-busy');
           const currentVariant = form.querySelector('[data-bb-variant]:checked')
             || form.querySelector('[data-bb-variant]');
-          button.disabled = currentVariant?.dataset.available !== 'true';
+          button.disabled = currentVariant?.dataset.available !== 'true'
+            || (button === buyNowButton && currentVariant?.dataset.priceReady === 'false');
         });
       }
     });

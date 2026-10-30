@@ -1,6 +1,10 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant | default: product.variants.first
   assign product_form_id = 'bb-product-form-' | append: section.id
+  assign checkout_url = routes.root_url | append: 'checkout'
+  capture current_price
+    render 'bb-price', variant: current_variant
+  endcapture
   assign current_image_alt = current_variant.featured_image.alt | default: product.featured_image.alt | default: product.title
   capture current_image
     render 'bb-variant-image', product: product, variant: current_variant
@@ -171,8 +175,8 @@
         {%- endif -%}
       </div>
       <div class="bb-product__price" role="status" aria-live="polite">
-        <span data-bb-price>{{ current_variant.price | money }}</span>
-        {%- if current_variant.compare_at_price > current_variant.price -%}
+        <span data-bb-price>{{ current_price | strip }}</span>
+        {%- if current_variant.price > 0 and current_variant.compare_at_price > current_variant.price -%}
           <s data-bb-compare-price>{{ current_variant.compare_at_price | money }}</s>
         {%- else -%}
           <s data-bb-compare-price hidden></s>
@@ -193,6 +197,7 @@
                 {%- capture swatch_color -%}{%- render 'bb-swatch-color', variant: variant -%}{%- endcapture -%}
                 {%- capture variant_background -%}{%- render 'bb-variant-theme', product: product, variant: variant, mode: 'background' -%}{%- endcapture -%}
                 {%- capture variant_panel -%}{%- render 'bb-variant-theme', product: product, variant: variant, mode: 'panel' -%}{%- endcapture -%}
+                {%- capture variant_price -%}{%- render 'bb-price', variant: variant -%}{%- endcapture -%}
                 <input
                   type="radio"
                   name="id"
@@ -203,8 +208,9 @@
                   data-image="{{ variant_image | strip | escape }}"
                   data-background="{{ variant_background | strip | default: section.settings.background_color }}"
                   data-panel="{{ variant_panel | strip | default: section.settings.panel_color }}"
-                  data-price="{{ variant.price | money | escape }}"
-                  data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}"
+                  data-price="{{ variant_price | strip | escape }}"
+                  data-price-ready="{% if variant.price > 0 %}true{% else %}false{% endif %}"
+                  data-compare-price="{% if variant.price > 0 and variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}"
                   data-available="{{ variant.available }}"
                   {% if variant.id == current_variant.id %}checked{% endif %}
                 >
@@ -221,7 +227,7 @@
             </div>
           </fieldset>
         {%- else -%}
-          <input type="hidden" name="id" value="{{ current_variant.id }}" data-bb-variant data-image="{{ current_image | strip | escape }}" data-price="{{ current_variant.price | money | escape }}" data-compare-price="{% if current_variant.compare_at_price > current_variant.price %}{{ current_variant.compare_at_price | money | escape }}{% endif %}" data-background="{{ current_background | strip | default: section.settings.background_color }}" data-panel="{{ current_panel | strip | default: section.settings.panel_color }}" data-available="{{ current_variant.available }}" data-variant-title="{{ current_variant.title | escape }}">
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-bb-variant data-image="{{ current_image | strip | escape }}" data-price="{{ current_price | strip | escape }}" data-price-ready="{% if current_variant.price > 0 %}true{% else %}false{% endif %}" data-compare-price="{% if current_variant.price > 0 and current_variant.compare_at_price > current_variant.price %}{{ current_variant.compare_at_price | money | escape }}{% endif %}" data-background="{{ current_background | strip | default: section.settings.background_color }}" data-panel="{{ current_panel | strip | default: section.settings.panel_color }}" data-available="{{ current_variant.available }}" data-variant-title="{{ current_variant.title | escape }}">
         {%- endif -%}
 
         <div class="bb-product__purchase">
@@ -233,11 +239,11 @@
             class="bb-product__buy-now"
             type="submit"
             name="add"
-            formaction="{{ routes.cart_add_url }}?return_to=%2Fcheckout"
+            formaction="{{ routes.cart_add_url }}?return_to={{ checkout_url | url_encode }}"
             data-bb-buy-now
-            {% unless current_variant.available %}disabled{% endunless %}
+            {% unless current_variant.available and current_variant.price > 0 %}disabled{% endunless %}
           >
-            <span>Buy now</span><span aria-hidden="true">→</span>
+            <span data-bb-buy-now-label>{% if current_variant.price > 0 %}Buy now{% else %}Coming soon{% endif %}</span><span aria-hidden="true">→</span>
           </button>
         </div>
       {% endform %}
@@ -302,11 +308,11 @@
       <div>
         <strong>{{ product.title | escape }}</strong>
         <span data-bb-cart-dialog-variant>{{ current_variant.title | escape }}</span>
-        <span data-bb-cart-dialog-price>{{ current_variant.price | money }}</span>
+        <span data-bb-cart-dialog-price>{{ current_price | strip }}</span>
       </div>
     </div>
     <p class="bb-product__cart-dialog-message" data-bb-cart-dialog-message>Your bag is ready whenever you are.</p>
-    <a class="bb-product__cart-dialog-checkout" href="/checkout" data-bb-cart-dialog-checkout>Continue to checkout <span aria-hidden="true">→</span></a>
+    <a class="bb-product__cart-dialog-checkout" href="{{ checkout_url }}" data-bb-cart-dialog-checkout {% unless current_variant.price > 0 %}hidden{% endunless %}>Continue to checkout <span aria-hidden="true">→</span></a>
     <a class="bb-product__cart-dialog-view" href="{{ routes.cart_url }}">View your bag</a>
   </dialog>
 

@@ -4,6 +4,13 @@
     assign featured_collection = collections.all
   endif
   assign product_count = featured_collection.products.size | at_most: 3
+  assign checkout_url = routes.root_url | append: 'checkout'
+  for item in cart.items
+    if item.variant.price == 0
+      assign checkout_url = routes.cart_url
+      break
+    endif
+  endfor
 -%}
 
 <section
@@ -122,6 +129,7 @@
                 data-image="{{ variant_image | strip | escape }}"
                 data-url="{{ product.url }}?variant={{ variant.id }}"
                 data-available="{{ variant.available }}"
+                data-price-ready="{% if variant.price > 0 %}true{% else %}false{% endif %}"
                 data-background="{{ variant_background | strip | default: section.settings.background_color }}"
                 data-panel="{{ variant_panel | strip | default: section.settings.panel_color }}"
                 style="--bb-swatch: {{ swatch_color | strip }};"
@@ -140,12 +148,12 @@
       <a class="bb-home__discover" data-bb-discover href="{{ featured_collection.products.first.url }}">
         {{ section.settings.discover_label | escape }} <span aria-hidden="true">→</span>
       </a>
-      <form class="bb-home__buy-form" action="{{ routes.cart_add_url }}?return_to=%2Fcheckout" method="post">
+      <form class="bb-home__buy-form" action="{{ routes.cart_add_url }}?return_to={{ checkout_url | url_encode }}" method="post">
         <input type="hidden" name="id" value="{{ featured_collection.products.first.selected_or_first_available_variant.id }}" data-bb-home-buy-variant>
         <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="bb-home__buy" data-bb-home-buy {% unless featured_collection.products.first.selected_or_first_available_variant.available %}disabled{% endunless %}>
+        <button type="submit" class="bb-home__buy" data-bb-home-buy {% unless featured_collection.products.first.selected_or_first_available_variant.available and featured_collection.products.first.selected_or_first_available_variant.price > 0 %}disabled{% endunless %}>
           {{ 'icon-cart.svg' | inline_asset_content }}
-          <span>Buy now</span>
+          <span data-bb-home-buy-label>{% if featured_collection.products.first.selected_or_first_available_variant.price > 0 %}Buy now{% else %}Coming soon{% endif %}</span>
           <span class="bb-home__buy-arrow" aria-hidden="true">→</span>
         </button>
       </form>
